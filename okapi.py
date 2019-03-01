@@ -27,7 +27,3 @@ class Okapi():
         except:
             return False
 
-
-okapi = Okapi("en","ja")
-okapi.create_xlf(r"C:\Users\Kato.Takatsugu\Documents\git_repo\kon-nyaku\sample_file\test.docx")
-okapi.create_transled_file(r"C:\Users\Kato.Takatsugu\Documents\git_repo\kon-nyaku\sample_file\test.docx.xlf")

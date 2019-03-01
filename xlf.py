@@ -70,10 +70,3 @@ def Clean_element_string(string):
     # string = re.sub('</?seg-source.*?>', "", string)
     return string
 
-xlf_obj = Xlf("./sample_file/test.docx.xlf")
-files = xlf_obj.get_segment()
-
-# tree = ET.parse("./sample_file/test.docx.xlf")
-# root = tree.getroot()
-# print(root.tag,root.attrib)
-
