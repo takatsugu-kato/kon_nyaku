@@ -11,7 +11,7 @@ class Okapi():
         self.__tl = tl
 
     def create_xlf(self, filepath):
-        cmd = "{0} -x {1} -seg -sl {2} -tl {3}".format(self.tikal_name, filepath, self.__en, self.__tl)
+        cmd = "{0} -x {1} -seg -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res
@@ -20,7 +20,7 @@ class Okapi():
 
     def create_transled_file(self, filepath):
         cmd = self.tikal_name + ' -m "' + filepath
-        cmd = "{0} -m {1} -sl {2} -tl {3}".format(self.tikal_name, filepath, self.__en, self.__tl)
+        cmd = "{0} -m {1} -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res
