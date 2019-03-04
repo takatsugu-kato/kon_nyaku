@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+from lxml import etree
 import re
 
 class Xlf():
@@ -7,11 +7,11 @@ class Xlf():
         self.target_language = ""
 
         self.path = path
-        self.tree = ET.parse(path)
-        ET.register_namespace('', 'urn:oasis:names:tc:xliff:document:1.2')
-        ET.register_namespace('okp', 'okapi-framework:xliff-extensions')
-        ET.register_namespace('its', 'http://www.w3.org/2005/11/its')
-        ET.register_namespace('itsxlf', 'http://www.w3.org/ns/its-xliff/')
+        self.tree = etree.parse(path)
+        etree.register_namespace('xliff', 'urn:oasis:names:tc:xliff:document:1.2')
+        etree.register_namespace('okp', 'okapi-framework:xliff-extensions')
+        etree.register_namespace('its', 'http://www.w3.org/2005/11/its')
+        etree.register_namespace('itsxlf', 'http://www.w3.org/ns/its-xliff/')
         self.root = self.tree.getroot()
         self.ns = {
             'xliff': 'urn:oasis:names:tc:xliff:document:1.2',
@@ -50,7 +50,7 @@ class Xlf():
                 target = trans_unit.find('xliff:target', self.ns)
                 trans_unit.remove(target)
                 trans_unit.append(new_target_element)
-        self.tree.write('output.xml', encoding="utf-8")
+        self.tree.write(self.path, encoding="utf-8")
 
 class File():
     def __init__(self, original):
@@ -70,15 +70,12 @@ class Segment():
         self.string = ""
 
 def Create_segment_element(self,segment_obj):
-    root = ET.Element('target')
-    root.set("xml:lang", self.target_language)
+    xml_string = '<target xml:lang="{0}">'.format(self.target_language)
     for mrk in segment_obj:
-        mrk_element = ET.SubElement(root, 'mrk')
-        mrk_element.set("mid", mrk.id)
-        mrk_element.set("mtype", "seg")
-        ##ToDO XML文字をでコードして入れる方法を探す
-        mrk_element.text = mrk.string
-    return root
+        xml_string = xml_string + '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.id,mrk.string)
+    xml_string = xml_string + "</target>"
+    tree = etree.fromstring(xml_string)
+    return tree
 
 def Create_seg_obj(self, trans_unit_element, tag):
     element = trans_unit_element.find('xliff:'+tag, self.ns)
@@ -96,7 +93,7 @@ def Create_seg_obj(self, trans_unit_element, tag):
         return mrks
 
 def Element_to_string(element):
-    string = ET.tostring(element, encoding='unicode', short_empty_elements=True)
+    string = etree.tostring(element, encoding='unicode')
     return (Clean_element_string(string))
 
 def Clean_element_string(string):
@@ -105,8 +102,3 @@ def Clean_element_string(string):
     string = re.sub('</?source.*?>', "", string)
     string = re.sub('</?mrk.*?>', "", string)
     return string
-
-xlf_obj = Xlf("./sample_file/test.docx.xlf")
-xlf_obj.seg_data[1].segments[0].seg_target[0].string = "irekaemasita"
-
-xlf_obj.Back_to_xlf()
