@@ -50,7 +50,7 @@ class Xlf():
                 target = trans_unit.find('xliff:target', self.ns)
                 trans_unit.remove(target)
                 trans_unit.append(new_target_element)
-        self.tree.write(self.path, encoding="utf-8")
+        self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
 
 class File():
     def __init__(self, original):
