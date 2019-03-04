@@ -40,7 +40,7 @@ class Xlf():
         return files
 
     def Back_to_xlf(self):
-        for file in self.seg_data:
+        for file in self.files:
             for trans_unit in file.segments:
                 new_target_element = Create_segment_element(self, trans_unit.seg_target)
                 # string = ET.tostring(new_target_element, encoding='unicode', short_empty_elements=True)
