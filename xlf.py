@@ -16,7 +16,7 @@ class Xlf():
         self.ns = {
             'xliff': 'urn:oasis:names:tc:xliff:document:1.2',
         }
-        self.seg_data = self.Get_segment()
+        self.files = self.Get_segment()
         self.Set_language()
 
     def Set_language(self):
