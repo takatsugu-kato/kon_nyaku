@@ -2,6 +2,13 @@ from lxml import etree
 import re
 
 class Xlf():
+    """
+    Object handling xlf file
+    
+    Args:
+        path (str): path of the xlf file
+    """
+
     def __init__(self, path):
         self.source_language = ""
         self.target_language = ""
@@ -20,11 +27,22 @@ class Xlf():
         self.Set_language()
 
     def Set_language(self):
+        """
+        Set language code from xlf file to this class const
+        """
+
         files = self.root.findall('xliff:file', self.ns)
         self.source_language = files[0].get('source-language')
         self.target_language = files[0].get('target-language')
 
     def Get_segment(self):
+        """
+        Create File obcject from xlf file
+        
+        Returns:
+            File: File objects
+        """
+
         files = []
         for file in self.root.findall('xliff:file', self.ns):
             file_obj = File(file.get('original'))
@@ -40,9 +58,13 @@ class Xlf():
         return files
 
     def Back_to_xlf(self):
+        """
+        Generate to xlf file from File object
+        """
+
         for file in self.files:
             for trans_unit in file.segments:
-                new_target_element = Create_segment_element(self, trans_unit.seg_target)
+                new_target_element = Create_xml_string_for_segment_element(self, trans_unit.seg_target)
                 # string = ET.tostring(new_target_element, encoding='unicode', short_empty_elements=True)
                 # print (string)
                 condition = 'xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'.format(file.original, trans_unit.id)
@@ -53,11 +75,19 @@ class Xlf():
         self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
 
 class File():
+    """
+    Object of <file> tag in xlf
+    """
+
     def __init__(self, original):
         self.original = original
         self.segments = []
 
 class TransUnit():
+    """
+    Object of <trans-unit> tag in xlf
+    """
+
     def __init__(self, id):
         self.id = id
         self.source = ""
@@ -65,11 +95,25 @@ class TransUnit():
         self.seg_target = []
 
 class Segment():
+    """
+    Object of <seg-source>, <source>, and <target> tag in xlf
+    """
+
     def __init__(self, id = 0):
         self.id = id
         self.string = ""
 
-def Create_segment_element(self,segment_obj):
+def Create_xml_string_for_segment_element(self,segment_obj):
+    """
+    Create xml string for segment element
+    
+    Args:
+        segment_obj (Segment): Segment object in this class
+    
+    Returns:
+        str: xml string
+    """
+
     xml_string = '<target xml:lang="{0}">'.format(self.target_language)
     for mrk in segment_obj:
         xml_string = xml_string + '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.id,mrk.string)
@@ -78,6 +122,17 @@ def Create_segment_element(self,segment_obj):
     return tree
 
 def Create_seg_obj(self, trans_unit_element, tag):
+    """
+    Creale Segment object from etree.Element
+    
+    Args:
+        trans_unit_element (etree.Element): Element object of etree
+        tag (str): tag name (source, seg-source, target)
+    
+    Returns:
+        Segment: Segment object in this class
+    """
+
     element = trans_unit_element.find('xliff:'+tag, self.ns)
 
     if (tag == "source"):
@@ -93,10 +148,30 @@ def Create_seg_obj(self, trans_unit_element, tag):
         return mrks
 
 def Element_to_string(element):
+    """
+    Convert Element object to string
+    
+    Args:
+        element (etree.Element): Element object of etree
+    
+    Returns:
+        str: plain text of Element
+    """
+
     string = etree.tostring(element, encoding='unicode')
     return (Clean_element_string(string))
 
 def Clean_element_string(string):
+    """
+    Clean the string of Element
+    
+    Args:
+        string (str): plain text of Element
+    
+    Returns:
+        str: string of deleted xml tag
+    """
+
     string = re.sub('<ns[0-9]+:', "<", string)
     string = re.sub('</ns[0-9]+:', "</", string)
     string = re.sub('</?source.*?>', "", string)

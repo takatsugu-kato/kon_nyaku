@@ -1,6 +1,13 @@
 import re
 
 class XlfString():
+    """
+    Object handling string with xlf tag
+    
+    Args:
+        string (str): string with xlf tag
+    """
+
     def __init__(self, string):
         self.string = string
         self.inline_tag_list = ["g"]
@@ -10,6 +17,13 @@ class XlfString():
         self.void_paired_placeholder()
 
     def delete_inline_tag(self):
+        """
+        Delete xlf inline tag
+        
+        Returns:
+            str: strig of deleted xlf inline tag
+        """
+
         deleted_inline_tag_string = self.string
         for tag in self.inline_tag_list:
             repatter = re.compile(r'<{0} id=".*?">(.*?)</{0}>'.format(tag))
@@ -17,6 +31,13 @@ class XlfString():
         return deleted_inline_tag_string
 
     def change_inline_tag(self):
+        """
+        Change xlf inline tag to span tag
+        
+        Returns:
+            str: string of changed xlf tag to span tag
+        """
+
         changed_inline_tag_string = self.string
         for tag in self.inline_tag_list:
             repatter = re.compile(r'<{0} id="(.*?)">(.*?)</{0}>'.format(tag))
@@ -24,6 +45,10 @@ class XlfString():
         return changed_inline_tag_string
 
     def void_paired_placeholder(self):
+        """
+        Void the paird placeholder tag (ex and bx)
+        """
+
         repatter = re.compile(r'<(ex|bx) id="([0-9]+)"/>')
         m = repatter.match(self.string)
         if m:
@@ -35,6 +60,16 @@ class XlfString():
                 self.exist_bx_tag = True
 
     def revert_paired_placeholder(self, text):
+        """
+        Revert paired placeholder tag
+        
+        Args:
+            text (str): String of to revert paired placeholder tag
+        
+        Returns:
+            str: String of with paired placeholder tag
+        """
+
         if self.exist_bx_tag:
             text = '<bx id ="{0}"/>'.format(self.paired_placeholder_id) + text
         if self.exist_ex_tag:
