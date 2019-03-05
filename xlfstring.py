@@ -14,7 +14,7 @@ class XlfString():
         self.exist_ex_tag = False
         self.exist_bx_tag = False
         self.paired_placeholder_id = 0
-        self.void_paired_placeholder()
+        self.__void_paired_placeholder()
 
     def delete_inline_tag(self):
         """
@@ -44,7 +44,7 @@ class XlfString():
             changed_inline_tag_string = repatter.sub('<span id="\\1">\\2</span>', changed_inline_tag_string)
         return changed_inline_tag_string
 
-    def void_paired_placeholder(self):
+    def __void_paired_placeholder(self):
         """
         Void the paird placeholder tag (ex and bx)
         """
