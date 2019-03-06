@@ -73,15 +73,15 @@ class Xlf():
                     if delete_format_tag:
                         xlfstring.delete_inline_tag()
                     else:
-                        xlfstring.change_xlf_inline_tag_to_span()
+                        xlfstring.change_xlf_inline_tag_to_i_tag()
                     translation = translate_client.translate(
                         xlfstring.string,
                         model=model,
                         source_language=self.source_language,
                         target_language=self.target_language)
                     translated_text = translation['translatedText']
-                    translated_text = xlfstring.change_span_to_xlf_inline_tag(translated_text)
-                    segment.string = xlfstring.revert_paired_placeholder(translated_text)
+                    translated_text = xlfstring.change_i_tag_to_xlf_inline_tag(translated_text)
+                    segment.string = xlfstring.revert_placeholder(translated_text)
 
     def Back_to_xlf(self):
         """
@@ -219,6 +219,7 @@ class XlfString():
         self.exist_bx_tag = False
         self.paired_placeholder_id = 0
         self.__void_paired_placeholder()
+        self.__replace_placeholder_to_notran_tag()
         ##TODO:セグメントの最初にgタグがあったかを保持しておいて、
         # 最後に文全体にgタグをもどしてあげると、文頭の書式だけ保持できる？
         # そもそも、書式削除しないでも翻訳品質を維持できるなら書式削除オプション自体をなくすのでこの保持は不要
@@ -234,32 +235,32 @@ class XlfString():
             repatter = re.compile(r'</{0}>'.format(tag))
             self.string = repatter.sub('', self.string)
 
-    def change_xlf_inline_tag_to_span(self):
+    def change_xlf_inline_tag_to_i_tag(self):
         """
-        Change xlf inline tag to span tag from self.string
+        Change xlf inline tag to i tag from self.string
         """
 
         for tag in self.inline_tag_list:
             repatter = re.compile(r'<{0} id="(.*?)">'.format(tag))
-            self.string = repatter.sub('<span id="\\1">', self.string)
+            self.string = repatter.sub('<i id="\\1">', self.string)
             repatter = re.compile(r'</{0}>'.format(tag))
-            self.string = repatter.sub('</span>', self.string)
+            self.string = repatter.sub('</i>', self.string)
 
-    def change_span_to_xlf_inline_tag(self, text):
+    def change_i_tag_to_xlf_inline_tag(self, text):
         """
-        Change span tag to xlf inline tag
+        Change i tag to xlf inline tag
 
         Args:
-            text (str): String of to change span tag to xlf tag
+            text (str): String of to change i tag to xlf tag
         
         Returns:
-            str: string of changed span tag to xlf tag
+            str: string of changed i tag to xlf tag
         """
 
         changed_inline_tag_string = text
-        repatter = re.compile(r'<{0} id="(.*?)">'.format("span"))
+        repatter = re.compile(r'<{0} id="(.*?)">'.format("i"))
         changed_inline_tag_string = repatter.sub('<g id="\\1">', changed_inline_tag_string)
-        repatter = re.compile(r'</{0}>'.format("span"))
+        repatter = re.compile(r'</{0}>'.format("i"))
         changed_inline_tag_string = repatter.sub('</g>', changed_inline_tag_string)
         return changed_inline_tag_string
 
@@ -278,17 +279,26 @@ class XlfString():
             elif m.group(1) == "bx":
                 self.exist_bx_tag = True
 
-    def revert_paired_placeholder(self, text):
+    def __replace_placeholder_to_notran_tag(self):
         """
-        Revert paired placeholder tag
+        Replace xlf placeholder tag to no translate tag of google for enhanced translation quality
+        """
+
+        repatter = re.compile(r'<x id="([0-9]+)"/>')
+        self.string = repatter.sub('<span translate="no" id="\\1">X</span>', self.string)
+
+    def revert_placeholder(self, text):
+        """
+        Revert placeholder tag
         
         Args:
-            text (str): String of to revert paired placeholder tag
+            text (str): String of to revert placeholder tag
         
         Returns:
             str: String of with paired placeholder tag
         """
-
+        repatter = re.compile(r'<span translate="no" id="([0-9]+)">X</span>')
+        text = repatter.sub('<x id="\\1"/>', text)
         if self.exist_bx_tag:
             text = '<bx id ="{0}"/>'.format(self.paired_placeholder_id) + text
         if self.exist_ex_tag:
