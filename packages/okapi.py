@@ -29,7 +29,7 @@ class Okapi():
             str or bool(False): Command line output of tikal or False
         """
 
-        cmd = "{0} -x {1} -seg -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
+        cmd = "{0} -x \"{1}\" -seg -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res
@@ -47,8 +47,7 @@ class Okapi():
             str or bool(False): Command line output of tikal or False
         """
 
-        cmd = self.tikal_name + ' -m "' + filepath
-        cmd = "{0} -m {1} -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
+        cmd = "{0} -m \"{1}\" -sl {2} -tl {3} -ie utf8 -oe utf8".format(self.tikal_name, filepath, self.__en, self.__tl)
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res

@@ -58,10 +58,11 @@ class Xlf():
             files.append(file_obj)
         return files
 
-    def Translate(self, model = "nmt"):
+    def Translate(self, model="nmt", delete_format_tag=False):
         """
         Transalte the file object
             model (str, optional): Defaults to "nmt". Model of Google translate. If you want to translate by smt, set the model to "base".
+            delete_format_tag (bool, optioanl): Defaults to False. Flag of to delete the format tag when translate.
         """
 
         translate_client = translate.Client()
@@ -69,8 +70,12 @@ class Xlf():
             for trans_unit in file.trans_units:
                 for segment in trans_unit.seg_target:
                     xlfstring = XlfString(segment.string)
+                    if delete_format_tag:
+                        xlfstring.delete_inline_tag()
+                    else:
+                        xlfstring.change_xlf_inline_tag_to_span()
                     translation = translate_client.translate(
-                        xlfstring.change_xlf_inline_tag_to_span(),
+                        xlfstring.string,
                         model=model,
                         source_language=self.source_language,
                         target_language=self.target_language)
@@ -214,36 +219,31 @@ class XlfString():
         self.exist_bx_tag = False
         self.paired_placeholder_id = 0
         self.__void_paired_placeholder()
+        ##TODO:セグメントの最初にgタグがあったかを保持しておいて、
+        # 最後に文全体にgタグをもどしてあげると、文頭の書式だけ保持できる？
+        # そもそも、書式削除しないでも翻訳品質を維持できるなら書式削除オプション自体をなくすのでこの保持は不要
 
     def delete_inline_tag(self):
         """
-        Delete xlf inline tag
-        
-        Returns:
-            str: strig of deleted xlf inline tag
+        Delete xlf inline tag from self.string
         """
 
-        deleted_inline_tag_string = self.string
         for tag in self.inline_tag_list:
-            repatter = re.compile(r'<{0} id=".*?">(.*?)</{0}>'.format(tag))
-            deleted_inline_tag_string = repatter.sub("\\1", deleted_inline_tag_string)
-        return deleted_inline_tag_string
+            repatter = re.compile(r'<{0} id=".*?">'.format(tag))
+            self.string = repatter.sub('', self.string)
+            repatter = re.compile(r'</{0}>'.format(tag))
+            self.string = repatter.sub('', self.string)
 
     def change_xlf_inline_tag_to_span(self):
         """
-        Change xlf inline tag to span tag
-        
-        Returns:
-            str: string of changed xlf tag to span tag
+        Change xlf inline tag to span tag from self.string
         """
 
-        changed_inline_tag_string = self.string
         for tag in self.inline_tag_list:
             repatter = re.compile(r'<{0} id="(.*?)">'.format(tag))
-            changed_inline_tag_string = repatter.sub('<span id="\\1">', changed_inline_tag_string)
+            self.string = repatter.sub('<span id="\\1">', self.string)
             repatter = re.compile(r'</{0}>'.format(tag))
-            changed_inline_tag_string = repatter.sub('</span>', changed_inline_tag_string)
-        return changed_inline_tag_string
+            self.string = repatter.sub('</span>', self.string)
 
     def change_span_to_xlf_inline_tag(self, text):
         """
@@ -269,7 +269,7 @@ class XlfString():
         """
 
         repatter = re.compile(r'<(ex|bx) id="([0-9]+)"/>')
-        m = repatter.match(self.string)
+        m = repatter.search(self.string)
         if m:
             self.paired_placeholder_id = m.group(2)
             self.string = repatter.sub("", self.string)
