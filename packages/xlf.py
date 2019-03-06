@@ -53,7 +53,7 @@ class Xlf():
                 trans_unit_obj.seg_source = self.__Create_seg_obj(trans_unit_element, "seg-source")
                 trans_unit_obj.seg_target = self.__Create_seg_obj(trans_unit_element, "target")
 
-                file_obj.segments.append(trans_unit_obj)
+                file_obj.trans_units.append(trans_unit_obj)
             files.append(file_obj)
         return files
 
@@ -63,7 +63,7 @@ class Xlf():
         """
 
         for file in self.files:
-            for trans_unit in file.segments:
+            for trans_unit in file.trans_units:
                 new_target_element = self.__Create_xml_string_for_segment_element(trans_unit.seg_target)
                 # string = ET.tostring(new_target_element, encoding='unicode', short_empty_elements=True)
                 # print (string)
@@ -156,7 +156,7 @@ class File():
 
     def __init__(self, original):
         self.original = original
-        self.segments = []
+        self.trans_units = []
 
 class TransUnit():
     """
