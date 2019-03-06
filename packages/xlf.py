@@ -24,10 +24,10 @@ class Xlf():
         self.ns = {
             'xliff': 'urn:oasis:names:tc:xliff:document:1.2',
         }
-        self.files = self.__Get_segment()
-        self.__Set_language()
+        self.files = self.__get_segment()
+        self.__set_language()
 
-    def __Set_language(self):
+    def __set_language(self):
         """
         Set language code from xlf file to this class const
         """
@@ -36,7 +36,7 @@ class Xlf():
         self.source_language = files[0].get('source-language')
         self.target_language = files[0].get('target-language')
 
-    def __Get_segment(self):
+    def __get_segment(self):
         """
         Create File obcject from xlf file
         
@@ -50,15 +50,15 @@ class Xlf():
             for trans_unit_element in file.findall('xliff:body/xliff:trans-unit', self.ns):
                 trans_unit_obj = TransUnit(trans_unit_element.get('id'))
 
-                trans_unit_obj.source = self.__Create_seg_obj(trans_unit_element, "source")
-                trans_unit_obj.seg_source = self.__Create_seg_obj(trans_unit_element, "seg-source")
-                trans_unit_obj.seg_target = self.__Create_seg_obj(trans_unit_element, "target")
+                trans_unit_obj.source = self.__create_seg_obj(trans_unit_element, "source")
+                trans_unit_obj.seg_source = self.__create_seg_obj(trans_unit_element, "seg-source")
+                trans_unit_obj.seg_target = self.__create_seg_obj(trans_unit_element, "target")
 
                 file_obj.trans_units.append(trans_unit_obj)
             files.append(file_obj)
         return files
 
-    def Translate(self, model="nmt", delete_format_tag=False):
+    def translate(self, model="nmt", delete_format_tag=False):
         """
         Transalte the file object
             model (str, optional): Defaults to "nmt". Model of Google translate. If you want to translate by smt, set the model to "base".
@@ -83,14 +83,14 @@ class Xlf():
                     translated_text = xlfstring.change_i_tag_to_xlf_inline_tag(translated_text)
                     segment.string = xlfstring.revert_placeholder(translated_text)
 
-    def Back_to_xlf(self):
+    def back_to_xlf(self):
         """
         Generate to xlf file from File object
         """
 
         for file in self.files:
             for trans_unit in file.trans_units:
-                new_target_element = self.__Create_xml_string_for_segment_element(trans_unit.seg_target)
+                new_target_element = self.__create_xml_string_for_segment_element(trans_unit.seg_target)
                 # string = ET.tostring(new_target_element, encoding='unicode', short_empty_elements=True)
                 # print (string)
                 condition = 'xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'.format(file.original, trans_unit.id)
@@ -100,7 +100,7 @@ class Xlf():
                 trans_unit.append(new_target_element)
         self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
 
-    def __Create_xml_string_for_segment_element(self,segment_obj):
+    def __create_xml_string_for_segment_element(self,segment_obj):
         """
         Create xml string for segment element
         
@@ -118,7 +118,7 @@ class Xlf():
         tree = etree.fromstring(xml_string)
         return tree
 
-    def __Create_seg_obj(self, trans_unit_element, tag):
+    def __create_seg_obj(self, trans_unit_element, tag):
         """
         Creale Segment object from etree.Element
         
@@ -134,17 +134,17 @@ class Xlf():
 
         if (tag == "source"):
             seg_obj = Segment()
-            seg_obj.string = self.__Element_to_string(element)
+            seg_obj.string = self.__convert_element_to_string(element)
             return seg_obj
         else:
             mrks = []
             for mrk_element in element.findall('xliff:mrk', self.ns):
                 mrk_seg_obj = Segment(mrk_element.get('mid'))
-                mrk_seg_obj.string = self.__Element_to_string(mrk_element)
+                mrk_seg_obj.string = self.__convert_element_to_string(mrk_element)
                 mrks.append(mrk_seg_obj)
             return mrks
 
-    def __Element_to_string(self, element):
+    def __convert_element_to_string(self, element):
         """
         Convert Element object to string
         
@@ -156,9 +156,9 @@ class Xlf():
         """
 
         string = etree.tostring(element, encoding='unicode')
-        return (self.__Clean_element_string(string))
+        return (self.__clean_element_string(string))
 
-    def __Clean_element_string(self, string):
+    def __clean_element_string(self, string):
         """
         Clean the string of Element
         
