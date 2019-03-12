@@ -98,7 +98,7 @@ class Xlf():
             for trans_unit in file.trans_units:
                 new_target_element = self.__create_xml_string_for_element(trans_unit.seg_target)
                 condition = ('xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'
-                             .format(file.original, trans_unit.id))
+                             .format(file.original, trans_unit.trans_unit_id))
                 trans_unit = self.root.find(condition, self.namespace)
                 target = trans_unit.find('xliff:target', self.namespace)
                 trans_unit.remove(target)
@@ -119,7 +119,7 @@ class Xlf():
         xml_string = '<target xml:lang="{0}">'.format(self.target_language)
         for mrk in segment_obj:
             xml_string = (xml_string +
-                          '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.id, mrk.string))
+                          '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.segment_id, mrk.string))
         xml_string = xml_string + "</target>"
         tree = etree.fromstring(xml_string)
         return tree
