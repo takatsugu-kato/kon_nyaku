@@ -20,7 +20,7 @@ def translate_xlf():
 
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(model, delete_format_tag=True)
+    xlf_obj.translate(model, delete_format_tag=False, pseudo=True)
     xlf_obj.back_to_xlf()
 
     okapi_obj.create_transled_file(to_trans_file + ".xlf")

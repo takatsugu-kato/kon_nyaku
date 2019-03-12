@@ -3,6 +3,8 @@ This modules is to handle xlf file
 """
 
 import re
+import string as string_module
+import random
 from lxml import etree
 from google.cloud import translate
 
@@ -62,16 +64,25 @@ class Xlf():
             files.append(file_obj)
         return files
 
-    def translate(self, model="nmt", delete_format_tag=False):
+    def translate(self, model="nmt", delete_format_tag=False, pseudo=False):
         """
         Transalte the file object
-            model (str, optional): Defaults to "nmt". Model of Google translate.
-            If you want to translate by smt, set the model to "base".
-            delete_format_tag (bool, optioanl): Defaults to False.
-            Flag of to delete the format tag when translate.
-        """
 
-        translate_client = translate.Client()
+        Args:
+            model (str, optional): Defaults to "nmt". Model of Google translate.
+                                   If you want to translate by smt, set the model to "base".
+                                   delete_format_tag (bool, optioanl): Defaults to False.
+                                   Flag of to delete the format tag when translate.
+            delete_format_tag (bool, optional): Defaults to False.
+                                               If you want to delete inline format tag, set to True.
+            pseudo (bool, optional): Defaults to False.
+                                     If you want to pseudo translate, set to True.
+                                     For example, you don't to want to send to Google.
+        """
+        if pseudo:
+            translate_client = PseudoClient()
+        else:
+            translate_client = translate.Client()
         for file in self.files:
             for trans_unit in file.trans_units:
                 for segment in trans_unit.seg_target:
@@ -180,6 +191,62 @@ class Xlf():
         string = re.sub('</?source.*?>', "", string)
         string = re.sub('</?mrk.*?>', "", string)
         return string
+
+class PseudoClient():
+    """
+    Pseudo translate client object
+    """
+    def __init__(self, target_language='en'):
+        self.target_language = target_language
+
+    def translate(self, values, target_language=None,
+                  source_language=None,
+                  model=None):
+        """
+        Translate pseudo.
+
+        Args:
+            values (str): To pseudo translate string.
+            target_language (str, optional): This option is not use at this time.
+            source_language (str, optional): This option is not use at this time.
+            model (str, optional): This option is not use at this time.
+
+        Returns:
+            [dict]: Translations dict based on Google translate class
+        """
+        punctuation = ['.', ':', ';', ',', '!', '?']
+
+        #Firstry, split by tags
+        tag_splitted_list = re.split('(<span translate="no" id="[0-9]+?">.*?</span>|<.*?>)', values)
+        words = []
+
+        #Secondry, split by space
+        for temp in tag_splitted_list:
+            if temp:
+                if re.search('<.*?>', temp):
+                    words.append(temp)
+                else:
+                    words.extend(re.split('( )', temp))
+
+        for i, word in enumerate(words):
+            if not re.search('<.*?>', word) and word and word != " ":
+                last_chara = word[-1]
+                length = len(word)
+                pseudo_first_chara = ""
+                if i == 0:
+                    length = length - 1
+                    pseudo_first_chara = random.choice(string_module.ascii_uppercase)
+
+                if last_chara in punctuation:
+                    length = length - 1
+                else:
+                    last_chara = ""
+                words[i] = ''.join(random.choices(string_module.ascii_lowercase, k=length))
+                words[i] = pseudo_first_chara + words[i] + last_chara
+
+        translations = dict()
+        translations['translatedText'] = "".join(words)
+        return translations
 
 class File():
     """
