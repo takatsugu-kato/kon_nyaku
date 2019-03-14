@@ -19,7 +19,7 @@ class Okapi():
             self.tikal_name = "tikal.bat"
         elif os.name == "posix":
             self.tikal_name = "tikal.sh"
-        self.__en = sl
+        self.__sl = sl
         self.__tl = tl
 
     def create_xlf(self, filepath):
@@ -34,7 +34,7 @@ class Okapi():
         """
 
         cmd = ("{0} -x \"{1}\" -seg -sl {2} -tl {3} -ie utf8 -oe utf8"
-               .format(self.tikal_name, filepath, self.__en, self.__tl))
+               .format(self.tikal_name, filepath, self.__sl, self.__tl))
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res
@@ -53,7 +53,7 @@ class Okapi():
         """
 
         cmd = ("{0} -m \"{1}\" -sl {2} -tl {3} -ie utf8 -oe utf8"
-               .format(self.tikal_name, filepath, self.__en, self.__tl))
+               .format(self.tikal_name, filepath, self.__sl, self.__tl))
         try:
             res = subprocess.check_output(cmd, shell=True)
             return res
