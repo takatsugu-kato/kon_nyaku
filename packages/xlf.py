@@ -230,14 +230,16 @@ class PseudoClient():
                 else:
                     words.extend(re.split('( )', temp))
 
+        first_word = True
         for i, word in enumerate(words):
             if not re.search('<.*?>', word) and word and word != " ":
                 last_chara = word[-1]
                 length = len(word)
                 pseudo_first_chara = ""
-                if i == 0:
+                if first_word:
                     length = length - 1
                     pseudo_first_chara = random.choice(string_module.ascii_uppercase)
+                    first_word = False
 
                 if last_chara in punctuation:
                     length = length - 1
