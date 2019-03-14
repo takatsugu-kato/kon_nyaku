@@ -175,7 +175,8 @@ class Xlf():
         string = etree.tostring(element, encoding='unicode')
         return self.__clean_element_string(string)
 
-    def __clean_element_string(self, string):
+    @staticmethod
+    def __clean_element_string(string):
         """
         Clean the string of Element
 
@@ -199,7 +200,8 @@ class PseudoClient():
     def __init__(self, target_language='en'):
         self.target_language = target_language
 
-    def translate(self, values, target_language=None,
+    @staticmethod
+    def translate(values, target_language=None,
                   source_language=None,
                   model=None):
         """
@@ -319,7 +321,8 @@ class XlfString():
             repatter = re.compile(r'</{0}>'.format(tag))
             self.string = repatter.sub('</i>', self.string)
 
-    def change_i_tag_to_xlf_inline_tag(self, text):
+    @staticmethod
+    def change_i_tag_to_xlf_inline_tag(text):
         """
         Change i tag to xlf inline tag
 
