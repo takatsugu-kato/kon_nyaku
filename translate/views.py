@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from translate.models import File
 from translate.forms import DocumentForm
@@ -32,4 +32,4 @@ def file_del(request, file_id):
     """ファイルの削除"""
     file = get_object_or_404(File, pk=file_id)
     file.delete()
-    return redirect('file:file_list')
+    return HttpResponseRedirect('/translate/file')
