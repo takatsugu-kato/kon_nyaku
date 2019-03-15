@@ -4,6 +4,12 @@
 
 {% block content %}
     <h4 class="mt-4 border-bottom">ファイルの一覧</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.document }}
+        <input type="hidden" name="name" value="" id="id_name">
+        <button type="submit">Upload</button>
+    </form>
     <a href="{% url 'translate:file_add' %}" class="btn btn-primary btn-sm my-3">追加</a>
     <table class="table table-striped table-bordered">
       <thead>
