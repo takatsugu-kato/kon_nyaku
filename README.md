@@ -9,3 +9,12 @@ File translator used Google Translator API
 ## Installation
 ### Okapi
 Set the PATH
+
+## Usage
+```
+#run background tasks
+python manage.py process_tasks
+
+#run server
+python manage.py runserver
+```
