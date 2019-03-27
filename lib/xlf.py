@@ -19,7 +19,7 @@ class Xlf():
     def __init__(self, path):
         self.source_language = ""
         self.target_language = ""
-
+        self.trans_unit_count = 0
         self.path = path
         self.tree = etree.parse(path)
         etree.register_namespace('xliff', 'urn:oasis:names:tc:xliff:document:1.2')
@@ -49,7 +49,7 @@ class Xlf():
         Returns:
             File: File objects
         """
-
+        trans_unit_count = 0
         files = []
         for file in self.root.findall('xliff:file', self.namespace):
             file_obj = File(file.get('original'))
@@ -59,12 +59,13 @@ class Xlf():
                 trans_unit_obj.source = self.__create_seg_obj(trans_unit_element, "source")
                 trans_unit_obj.seg_source = self.__create_seg_obj(trans_unit_element, "seg-source")
                 trans_unit_obj.seg_target = self.__create_seg_obj(trans_unit_element, "target")
-
+                trans_unit_count = trans_unit_count + 1
                 file_obj.trans_units.append(trans_unit_obj)
             files.append(file_obj)
+        self.trans_unit_count = trans_unit_count
         return files
 
-    def translate(self, model="nmt", delete_format_tag=False, pseudo=False):
+    def translate(self, model="nmt", delete_format_tag=False, pseudo=False, django_file_obj=""):
         """
         Transalte the file object
 
@@ -78,13 +79,23 @@ class Xlf():
             pseudo (bool, optional): Defaults to False.
                                      If you want to pseudo translate, set to True.
                                      For example, you don't to want to send to Google.
+            django_file_obj (django file object, optional): Defaults to null.
+                                                Django file object for setting the progress
         """
         if pseudo:
             translate_client = PseudoClient()
         else:
             translate_client = translate.Client()
+        
+        count = 0
         for file in self.files:
             for trans_unit in file.trans_units:
+
+                count = count + 1
+                if django_file_obj:
+                    django_file_obj.status = count/self.trans_unit_count*100
+                    django_file_obj.save()
+
                 for segment in trans_unit.seg_target:
                     xlfstring = XlfString(segment.string)
                     if delete_format_tag:

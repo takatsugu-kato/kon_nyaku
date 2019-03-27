@@ -50,7 +50,7 @@ def translate_xlf(file_id):
 
     source_lang = file.source_lang
     target_lang = file.target_lang
-    model = "nmt"
+    translation_model = "nmt"
     # to_trans_file = "./sample_file/test.docx"
 
     okapi_obj = Okapi(source_lang, target_lang)
@@ -58,10 +58,8 @@ def translate_xlf(file_id):
 
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(model, delete_format_tag=False, pseudo=True)
+    xlf_obj.translate(translation_model, delete_format_tag=False, pseudo=True, django_file_obj=file)
     xlf_obj.back_to_xlf()
 
     okapi_obj.create_transled_file(to_trans_file + ".xlf")
 
-    file.status = 100
-    file.save()

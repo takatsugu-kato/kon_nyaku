@@ -2,8 +2,8 @@
 This is sample program to use xlf and okapi modules
 """
 
-from packages.xlf import Xlf
-from packages.okapi import Okapi
+from lib.xlf import Xlf
+from lib.okapi import Okapi
 
 def translate_xlf():
     """
