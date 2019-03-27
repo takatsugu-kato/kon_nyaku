@@ -6,6 +6,8 @@
     <h4 class="mt-4 border-bottom">ファイルの一覧</h4>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {{ form.source_lang }}
+        {{ form.target_lang }}
         {{ form.document }}
         <input type="hidden" name="name" value="" id="id_name">
         <button type="submit">Upload</button>
@@ -15,6 +17,8 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">ファイル名</th>
+          <th scope="col">ソース</th>
+          <th scope="col">ターゲット</th>
           <th scope="col">ステータス</th>
           <th scope="col">進捗</th>
           <th scope="col">作成日</th>
@@ -27,6 +31,8 @@
         <tr>
           <th scope="row">{{ file.id }}</th>
           <td>{{ file.name }}</td>
+          <td>{{ file.source_lang }}</td>
+          <td>{{ file.target_lang }}</td>
           <td>{{ file.status }}</td>
           <td>{{ file.progress }}</td>
           <td>{{ file.created_date }}</td>

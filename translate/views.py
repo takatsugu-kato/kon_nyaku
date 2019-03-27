@@ -10,13 +10,14 @@ from lib.xlf import Xlf
 # Create your views here.
 def file_list(request):
     """ファイルの一覧"""
-
+    default_form_value = {'target_lang':'ja'}
     if request.FILES:
-        form = DocumentForm(request.POST, request.FILES)
+        form = DocumentForm(request.POST, request.FILES, initial=default_form_value)
         if form.is_valid():
             form.save()
     else:
-        form = DocumentForm()
+        form = DocumentForm(initial=default_form_value)
+    # form['initial'] = {'target_lang':'ja'}
     files = File.objects.all().order_by('id')
     return render(request,
                   'translate/file_list.html',     # 使用するテンプレート
@@ -47,8 +48,8 @@ def translate_xlf(file_id):
 
     print("Translating {0}".format(to_trans_file))
 
-    source_lang = "en"
-    target_lang = "ja"
+    source_lang = file.source_lang
+    target_lang = file.target_lang
     model = "nmt"
     # to_trans_file = "./sample_file/test.docx"
 

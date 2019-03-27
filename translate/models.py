@@ -5,6 +5,8 @@ class File(models.Model):
     """ファイル"""
     name = models.CharField('ファイル名', max_length=255)
     status = models.IntegerField('ステータス', blank=True, default=0)
+    source_lang = models.CharField('ソース言語', max_length=8, default='')
+    target_lang = models.CharField('ターゲット言語', max_length=8, default='')
     progress = models.IntegerField('進捗', blank=True, default=0)
     created_date = models.DateTimeField('作成日', auto_now_add=True)
     modified_date = models.DateTimeField('変更日', auto_now=True)
