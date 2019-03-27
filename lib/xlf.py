@@ -86,14 +86,14 @@ class Xlf():
             translate_client = PseudoClient()
         else:
             translate_client = translate.Client()
-        
+
         count = 0
         for file in self.files:
             for trans_unit in file.trans_units:
 
                 count = count + 1
                 if django_file_obj:
-                    django_file_obj.status = count/self.trans_unit_count*100
+                    django_file_obj.progress = count/self.trans_unit_count*100
                     django_file_obj.save()
 
                 for segment in trans_unit.seg_target:
