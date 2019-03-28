@@ -27,22 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for file in files %}
-        <tr>
-          <th scope="row">{{ file.id }}</th>
-          <td>{{ file.name }}</td>
-          <td>{{ file.source_lang }}</td>
-          <td>{{ file.target_lang }}</td>
-          <td>{{ file.status }}</td>
-          <td>{{ file.progress }}</td>
-          <td>{{ file.created_date }}</td>
-          <td>{{ file.modified_date }}</td>
-          <td>
-            <a href="{% url 'translate:file_del' file_id=file.id %}" class="btn btn-outline-danger btn-sm">削除</a>
-            <a href="{% url 'translate:file_tra' file_id=file.id %}" class="btn btn-outline-primary btn-sm">翻訳</a>
-          </td>
-        </tr>
-        {% endfor %}
+        {{ file_list_data.html|safe }}
       </tbody>
     </table>
 {% endblock content %}

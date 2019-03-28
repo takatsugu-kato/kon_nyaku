@@ -1,11 +1,17 @@
+import json
+import pytz
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from background_task import background
+from django.core import serializers
+from django.utils import dateformat
 
 from translate.models import File
 from translate.forms import DocumentForm
 from lib.okapi import Okapi
 from lib.xlf import Xlf
+
+from .consts import STATUS
 
 # Create your views here.
 def file_list(request):
@@ -17,12 +23,12 @@ def file_list(request):
             form.save()
     else:
         form = DocumentForm(initial=default_form_value)
-    # form['initial'] = {'target_lang':'ja'}
-    files = File.objects.all().order_by('id')
+
     return render(request,
                   'translate/file_list.html',     # 使用するテンプレート
-                  {'files': files,
-                   'form': form},
+                  {'file_list_data': create_file_list_tbody_html(),
+                   'form': form,
+                   'STATUS': STATUS},
                  )
 
 
@@ -63,3 +69,36 @@ def translate_xlf(file_id):
 
     okapi_obj.create_transled_file(to_trans_file + ".xlf")
 
+def get_file_list_data(request):
+    return JsonResponse(create_file_list_tbody_html())
+
+def create_file_list_tbody_html():
+
+    jst = pytz.timezone('Asia/Tokyo')
+
+    files = File.objects.all().order_by('id')
+    html = ""
+    done_flag = 1
+    for file in files:
+        created_date = file.created_date.astimezone(jst)
+        created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
+        modified_date = file.modified_date.astimezone(jst)
+        modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
+        if file.status == 1:
+            done_flag = 0
+        html = html + '        <tr>\n'\
+            '          <th scope="row">' + str(file.id) + '</th>\n'\
+            '          <td>' + file.name + '</td>\n'\
+            '          <td>' + file.source_lang + '</td>\n'\
+            '          <td>' + file.target_lang + '</td>\n'\
+            '          <td>' + STATUS[file.status] + '</td>\n'\
+            '          <td>' + str(file.progress) + '</td>\n'\
+            '          <td>' + created_date_str + '</td>\n'\
+            '          <td>' + modified_date_str + '</td>\n'\
+            '          <td>\n'\
+            '            <a href="tra/' + str(file.id) + '" class="btn btn-outline-primary btn-sm">翻訳</a>\n'\
+            '            <a href="del/' + str(file.id) + '" class="btn btn-outline-danger btn-sm">削除</a>\n'\
+            '          </td>\n'\
+            '        </tr>\n'
+    return_json = {"html": html, "done_flag": done_flag}
+    return return_json
