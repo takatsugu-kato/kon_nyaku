@@ -1,4 +1,8 @@
 import json
+import mimetypes
+import os
+import io
+import urllib.parse
 import pytz
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -84,15 +88,23 @@ def create_file_list_tbody_html():
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
         modified_date = file.modified_date.astimezone(jst)
         modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
+
         if file.status == 1:
             done_flag = 0
+        if file.progress == 100:
+            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
+                            '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download>download</a></div></div>'
+        elif file.status == 0:
+            progress_html = "not start"
+        else:
+            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
+
         html = html + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
             '          <td>' + file.target_lang + '</td>\n'\
-            '          <td>' + STATUS[file.status] + '</td>\n'\
-            '          <td>' + str(file.progress) + '</td>\n'\
+            '          <td>' + progress_html + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
             '          <td>' + modified_date_str + '</td>\n'\
             '          <td>\n'\
@@ -102,3 +114,17 @@ def create_file_list_tbody_html():
             '        </tr>\n'
     return_json = {"html": html, "done_flag": done_flag}
     return return_json
+
+def download(request, file_id):
+    file = File.objects.get(pk=file_id)
+
+    root, ext = os.path.splitext(str(file.document))
+    translated_file_path = root + ".out" + ext
+
+    with open(translated_file_path, 'rb') as in_file:
+        binary = io.BytesIO(in_file.read())
+
+    mime = mimetypes.guess_type(translated_file_path)
+    response = HttpResponse(binary, content_type=mime[0])
+    response["Content-Disposition"] = 'filename=' + urllib.parse.quote(str(file))
+    return response
