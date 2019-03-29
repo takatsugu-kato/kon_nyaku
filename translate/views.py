@@ -38,15 +38,17 @@ def file_list(request):
 
 def file_tra(request, file_id):
     """ファイルの翻訳"""
+    file = File.objects.get(pk=file_id)
+    file.status = 1
+    file.save()
     translate_xlf(file_id)
-    return HttpResponse('ファイルの翻訳' + str(file_id))
+    return HttpResponse()
 
 
 def file_del(request, file_id):
     """ファイルの削除"""
-    file = get_object_or_404(File, pk=file_id)
-    file.delete()
-    return HttpResponseRedirect('/translate/file')
+    delete_files(file_id)
+    return HttpResponse()
 
 @background(queue='translate_queue', schedule=5)
 def translate_xlf(file_id):
@@ -73,6 +75,9 @@ def translate_xlf(file_id):
 
     okapi_obj.create_transled_file(to_trans_file + ".xlf")
 
+    file.status = 2
+    file.save()
+
 def get_file_list_data(request):
     return JsonResponse(create_file_list_tbody_html())
 
@@ -89,11 +94,13 @@ def create_file_list_tbody_html():
         modified_date = file.modified_date.astimezone(jst)
         modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
 
+        translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-outline-primary btn-sm">翻訳</a>\n'
         if file.status == 1:
             done_flag = 0
         if file.progress == 100:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
                             '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download>download</a></div></div>'
+            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-outline-primary btn-sm disabled">翻訳</a>\n'
         elif file.status == 0:
             progress_html = "not start"
         else:
@@ -108,8 +115,8 @@ def create_file_list_tbody_html():
             '          <td>' + created_date_str + '</td>\n'\
             '          <td>' + modified_date_str + '</td>\n'\
             '          <td>\n'\
-            '            <a href="tra/' + str(file.id) + '" class="btn btn-outline-primary btn-sm">翻訳</a>\n'\
-            '            <a href="del/' + str(file.id) + '" class="btn btn-outline-danger btn-sm">削除</a>\n'\
+            '            ' + translate_button_html + \
+            '            <button class="btn btn-outline-danger btn-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">削除</button>\n'\
             '          </td>\n'\
             '        </tr>\n'
     return_json = {"html": html, "done_flag": done_flag}
@@ -128,3 +135,18 @@ def download(request, file_id):
     response = HttpResponse(binary, content_type=mime[0])
     response["Content-Disposition"] = 'filename=' + urllib.parse.quote(str(file))
     return response
+
+def delete_files(file_id):
+    file = get_object_or_404(File, pk=file_id)
+
+    root, ext = os.path.splitext(str(file.document))
+    translated_file_path = root + ".out" + ext
+    xlf_file_path = str(file.document) + ".xlf"
+
+    if os.path.exists(translated_file_path):
+        os.remove(translated_file_path)
+    if os.path.exists(xlf_file_path):
+        os.remove(xlf_file_path)
+    if os.path.exists(str(file.document)):
+        os.remove(str(file.document))
+    file.delete()

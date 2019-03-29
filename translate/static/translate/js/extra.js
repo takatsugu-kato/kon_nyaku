@@ -2,7 +2,36 @@ $(function() {
 
     refreshFileList()
 
-    //Set the file name at hidden form when file is selected
+    //show modal window
+    $('table').on('click', '.del_confirm', function(){
+        $("#del_pk").text($(this).data("pk"));
+        $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
+    });
+
+    //delete file
+    $('#deleteModal').on('click', '#del_url', function(){
+        event.preventDefault();
+        $('#deleteModal').modal('hide');
+        var href = $(this).attr('href');
+        $.ajax({
+            url:href,
+        }).done(function(){
+            refreshFileList()
+        });
+    });
+
+    //translate
+    $('table').on('click', '.tra', function(){
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $.ajax({
+            url:href,
+        }).done(function(){
+            refreshFileList()
+        });
+    });
+
+    //set the file name at hidden form when file is selected
     $('#id_document').on("change", function() {
         var file = this.files[0];
         if(file != null) {
@@ -10,6 +39,7 @@ $(function() {
         }
     });
 
+    //reflesh file list
     function refreshFileList(){
         var html;
         $.ajax({
