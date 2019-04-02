@@ -25,15 +25,20 @@ def file_list(request):
 
     return render(request,
                   'translate/file_list.html',     # 使用するテンプレート
-                  {'file_list_data': create_file_list_tbody_html(),
+                  {'file_list_data': create_file_list_tbody_html(request),
                    'form': form,
                    'STATUS': STATUS},
                  )
 
 def upload_file(request):
+    """ファイルのアップロード"""
     default_form_value = {'target_lang':'ja'}
     if request.FILES:
-        form = DocumentForm(request.POST, request.FILES, initial=default_form_value)
+        #Set the session key to POST
+        copied_post_data = request.POST.copy()
+        copied_post_data['file_session_key'] = request.session.session_key
+
+        form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
         if form.is_valid():
             form.save()
     return HttpResponse("upload done")
@@ -81,13 +86,13 @@ def translate_xlf(file_id):
     file.save()
 
 def get_file_list_data(request):
-    return JsonResponse(create_file_list_tbody_html())
+    return JsonResponse(create_file_list_tbody_html(request))
 
-def create_file_list_tbody_html():
+def create_file_list_tbody_html(request):
 
     jst = pytz.timezone('Asia/Tokyo')
 
-    files = File.objects.all().order_by('id').reverse()
+    files = File.objects.filter(file_session_key=request.session.session_key).order_by('id').reverse()
     html = ""
     done_flag = 1
     for file in files:

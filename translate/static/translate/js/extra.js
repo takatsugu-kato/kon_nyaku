@@ -21,7 +21,6 @@ $(function() {
             beforeSend: function(xhr, settings) {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                     xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                    console.log($('#id_document'))
                     $('#id_document').val(null)
                 }
             },
