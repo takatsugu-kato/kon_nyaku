@@ -87,7 +87,7 @@ def create_file_list_tbody_html():
 
     jst = pytz.timezone('Asia/Tokyo')
 
-    files = File.objects.all().order_by('id')
+    files = File.objects.all().order_by('id').reverse()
     html = ""
     done_flag = 1
     for file in files:
