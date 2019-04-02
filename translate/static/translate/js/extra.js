@@ -8,6 +8,28 @@ $(function() {
         $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
     });
 
+    //upload file
+    $('button').on('click', function() {
+        event.preventDefault();
+        var csrf_token = getCookie("csrftoken");
+        $.ajax({
+            type:'POST',
+            url:"/translate/upload_file/",
+            data: new FormData($("#file_upload").get(0)),
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    console.log($('#id_document'))
+                    $('#id_document').val(null)
+                }
+            },
+        }).done(function(){
+            refreshFileList()
+        });
+    });
+
     //delete file
     $('#deleteModal').on('click', '#del_url', function(){
         event.preventDefault();
@@ -53,5 +75,26 @@ $(function() {
                 },5000);
             }
         });
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 });

@@ -4,7 +4,7 @@
 
 {% block content %}
     <h4 class="mt-4 border-bottom">ファイルの一覧</h4>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="file_upload">
         {% csrf_token %}
         {{ form.source_lang }}
         {{ form.target_lang }}

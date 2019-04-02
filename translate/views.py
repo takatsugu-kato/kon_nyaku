@@ -21,12 +21,7 @@ from .consts import STATUS
 def file_list(request):
     """ファイルの一覧"""
     default_form_value = {'target_lang':'ja'}
-    if request.FILES:
-        form = DocumentForm(request.POST, request.FILES, initial=default_form_value)
-        if form.is_valid():
-            form.save()
-    else:
-        form = DocumentForm(initial=default_form_value)
+    form = DocumentForm(initial=default_form_value)
 
     return render(request,
                   'translate/file_list.html',     # 使用するテンプレート
@@ -35,6 +30,13 @@ def file_list(request):
                    'STATUS': STATUS},
                  )
 
+def upload_file(request):
+    default_form_value = {'target_lang':'ja'}
+    if request.FILES:
+        form = DocumentForm(request.POST, request.FILES, initial=default_form_value)
+        if form.is_valid():
+            form.save()
+    return HttpResponse("upload done")
 
 def file_tra(request, file_id):
     """ファイルの翻訳"""

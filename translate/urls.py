@@ -8,5 +8,6 @@ urlpatterns = [
     path('file/tra/<int:file_id>/', views.file_tra, name='file_tra'),  # 翻訳
     path('file/del/<int:file_id>/', views.file_del, name='file_del'),   # 削除
     path('get_file_list_data/', views.get_file_list_data),
+    path('upload_file/', views.upload_file),
     path('download/<int:file_id>', views.download),
 ]
