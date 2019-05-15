@@ -109,7 +109,7 @@ def create_file_list_tbody_html(request):
                             '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download>download</a></div></div>'
             translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-outline-primary btn-sm disabled">翻訳</a>\n'
         elif file.status == 0:
-            progress_html = "not start"
+            progress_html = "not started"
         else:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
 
