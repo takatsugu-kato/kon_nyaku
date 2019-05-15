@@ -106,6 +106,12 @@ LANG = (
     ('zu', 'Zulu'),
 )
 
+SUPPORTED_FILE_FORMAT = [
+    ".docx",
+    ".xlsx",
+    ".pptx",
+]
+
 STATUS = {
     0: '未翻訳',
     1: '翻訳中',

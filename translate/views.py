@@ -39,9 +39,16 @@ def upload_file(request):
         copied_post_data['file_session_key'] = request.session.session_key
 
         form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
+
         if form.is_valid():
             form.save()
-    return HttpResponse("upload done")
+            result = {"type": "alert-success", "message": ["アップロードしました。"]}
+        else:
+            message = ""
+            for error in form.errors:
+                message = message + form.errors[error]
+            result = {"type": "alert-danger", "message": message}
+        return JsonResponse(result)#この段階でmessageがstrからarrayになる　なぜ？
 
 def file_tra(request, file_id):
     """ファイルの翻訳"""

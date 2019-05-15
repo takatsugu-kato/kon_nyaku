@@ -3,6 +3,7 @@
 {% block title %}ファイルの一覧{% endblock title %}
 
 {% block content %}
+    <div id="result"></div>
     <h4 class="mt-4 border-bottom">ファイルの一覧</h4>
     <form method="post" enctype="multipart/form-data" id="file_upload">
         {% csrf_token %}

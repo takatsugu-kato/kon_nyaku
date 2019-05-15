@@ -1,7 +1,10 @@
+import os
+
 from django import forms
 from translate.models import File
 
 from .consts import LANG
+from .consts import SUPPORTED_FILE_FORMAT
 
 class DocumentForm(forms.ModelForm):
     class Meta:
@@ -17,4 +20,16 @@ class DocumentForm(forms.ModelForm):
             'source_lang': forms.Select(choices=SOURCE_LANG, attrs={'class': 'form-control'}),
             'target_lang': forms.Select(choices=TARGET_LANG, attrs={'class': 'form-control'}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        path_split = os.path.splitext(name)
+        if path_split[1] not in SUPPORTED_FILE_FORMAT:
+            raise forms.ValidationError('name のバリデーションに引っかかりました。')
+        return name
+
+    # def clean_source_lang(self): #ToDo source_langとtarget_langが同じだったときのバリデーションをいれる
+    #     source_lang = self.cleaned_data['source_lang']
+    #     raise forms.ValidationError('source_lang のバリデーションに引っかかりました。')
+
 
