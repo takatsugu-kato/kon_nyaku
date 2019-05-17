@@ -16,7 +16,7 @@ class DocumentForm(forms.ModelForm):
 
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
-            'document': forms.FileInput(attrs={'class': 'form-control'}),
+            'document': forms.FileInput(attrs={'class': 'form-control', 'style': 'display:none'}),
             'source_lang': forms.Select(choices=SOURCE_LANG, attrs={'class': 'form-control'}),
             'target_lang': forms.Select(choices=TARGET_LANG, attrs={'class': 'form-control'}),
         }

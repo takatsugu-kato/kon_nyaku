@@ -19,19 +19,19 @@ from .consts import STATUS
 
 # Create your views here.
 def file_list(request):
-    """ファイルの一覧"""
+    """get list of files"""
     default_form_value = {'target_lang':'ja'}
     form = DocumentForm(initial=default_form_value)
 
     return render(request,
-                  'translate/file_list.html',     # 使用するテンプレート
+                  'translate/file_list.html',
                   {'file_list_data': create_file_list_tbody_html(request),
                    'form': form,
                    'STATUS': STATUS},
                  )
 
 def upload_file(request):
-    """ファイルのアップロード"""
+    """upload file"""
     default_form_value = {'target_lang':'ja'}
     if request.FILES:
         #Set the session key to POST
@@ -42,7 +42,7 @@ def upload_file(request):
 
         if form.is_valid():
             form.save()
-            result = {"type": "alert-success", "message": ["アップロードしました。"]}
+            result = {"type": "alert-success", "message": ["Uploaded"]}
         else:
             message = ""
             for error in form.errors:
@@ -51,7 +51,7 @@ def upload_file(request):
         return JsonResponse(result)#この段階でmessageがstrからarrayになる　なぜ？
 
 def file_tra(request, file_id):
-    """ファイルの翻訳"""
+    """translate file"""
     file = File.objects.get(pk=file_id)
     file.status = 1
     file.save()
@@ -60,7 +60,7 @@ def file_tra(request, file_id):
 
 
 def file_del(request, file_id):
-    """ファイルの削除"""
+    """delete file"""
     delete_files(file_id)
     return HttpResponse()
 
@@ -108,15 +108,15 @@ def create_file_list_tbody_html(request):
         modified_date = file.modified_date.astimezone(jst)
         modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
 
-        translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-outline-primary btn-sm">翻訳</a>\n'
+        translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
         if file.status == 1:
             done_flag = 0
         if file.progress == 100:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
-                            '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download>download</a></div></div>'
-            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-outline-primary btn-sm disabled">翻訳</a>\n'
+                            '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download><i class="fas fa-download"></i> Download</a></div></div>'
         elif file.status == 0:
             progress_html = "not started"
+            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"><i class="fas fa-language"></i></a>\n'
         else:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
 
@@ -130,7 +130,7 @@ def create_file_list_tbody_html(request):
             '          <td>' + modified_date_str + '</td>\n'\
             '          <td>\n'\
             '            ' + translate_button_html + \
-            '            <button class="btn btn-outline-danger btn-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">削除</button>\n'\
+            '            <button class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></button>\n'\
             '          </td>\n'\
             '        </tr>\n'
     return_json = {"html": html, "done_flag": done_flag}

@@ -113,9 +113,9 @@ SUPPORTED_FILE_FORMAT = [
 ]
 
 STATUS = {
-    0: '未翻訳',
-    1: '翻訳中',
-    2: '翻訳済み',
-    10: 'error',
-    100: 'error',
+    0: 'Not started',
+    1: 'Translating',
+    2: 'Translated',
+    10: 'Error',
+    100: 'Error',
 }

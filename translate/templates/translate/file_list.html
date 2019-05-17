@@ -1,45 +1,52 @@
 {% extends "translate/base.html" %}
 
-{% block title %}ファイルの一覧{% endblock title %}
+{% block title %}Kon-nyaku{% endblock title %}
 
 {% block content %}
     <div id="result"></div>
-    <h4 class="mt-4 border-bottom">ファイルの一覧</h4>
+    <h4 class="mt-4 border-bottom">File Translation</h4>
     <form method="post" enctype="multipart/form-data" id="file_upload">
         {% csrf_token %}
         {{ form.source_lang }}
         {{ form.target_lang }}
-        {{ form.document }}
+        <div class="input-group">
+          <label>
+            <span class="btn btn-primary"><i class="fas fa-file"></i> Choose File
+              {{ form.document }}
+            </span>
+          </label>
+          <input id="display_file_name" type="text" class="form-control" readonly="">
+        </div>
         {{ form.name }}
-        <button type="submit">Upload</button>
+        <button class="btn btn-info" type="submit"><i class="fas fa-upload"></i> Upload</button>
     </form>
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
           <th scope="col">ID</th>
-          <th scope="col">ファイル名</th>
+          <th scope="col">Name</th>
           <th scope="col">sl</th>
           <th scope="col">tl</th>
-          <th scope="col">進捗</th>
-          <th scope="col">作成日</th>
-          <th scope="col">変更日</th>
-          <th scope="col">操作</th>
+          <th scope="col">Progress</th>
+          <th scope="col">Created</th>
+          <th scope="col">Modified</th>
+          <th scope="col">Action</th>
         </tr>
       </thead>
       <tbody>
         {{ file_list_data.html|safe }}
       </tbody>
     </table>
-    {# 削除を確認するモーダル ダイアログ #}
+    {# Modal dialog to confirm deletion #}
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">確認</h5>
+            <h5 class="modal-title" id="deleteModalLabel">Confirmation</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
           <div class="modal-body">
-            <p>ID: <span id="del_pk"></span> を削除しますか？</p>
+            <p>ID: Are you sure you want to delete <span id="del_pk"></span>?</p>
           </div>
           <div class="modal-footer">
             <a href="#" class="btn btn-primary" id="del_url">OK</a>

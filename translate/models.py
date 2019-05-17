@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 class File(models.Model):
-    """ファイル"""
+    """File"""
     name = models.CharField('ファイル名', max_length=255)
     file_session_key = models.CharField('Session Key', max_length=40, default='')
     status = models.IntegerField('ステータス', blank=True, default=0)

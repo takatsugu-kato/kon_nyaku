@@ -22,6 +22,8 @@ $(function() {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                     xhr.setRequestHeader("X-CSRFToken", csrf_token);
                     $('#id_document').val(null)
+                    $('#id_name').val(null)
+                    $('#display_file_name').val(null)
                 }
             },
         }).done(function(data){
@@ -33,7 +35,7 @@ $(function() {
                     html: data.message.join("<br/>")
                 })
             )
-            // setTimeout("$('#result_message').fadeOut('slow').queue(function() {this.remove();})", 3000)
+            setTimeout("$('#result_message').fadeOut('slow').queue(function() {this.remove();})", 3000)
             refreshFileList()
         });
     });
@@ -66,6 +68,7 @@ $(function() {
         var file = this.files[0];
         if(file != null) {
             $('#id_name').val(file.name)
+            $('#display_file_name').val(file.name)
         }
     });
 
