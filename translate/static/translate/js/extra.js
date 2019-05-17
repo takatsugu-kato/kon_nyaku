@@ -9,7 +9,7 @@ $(function() {
     });
 
     //upload file
-    $('button').on('click', function() {
+    $('#upload').on('click', function() {
         event.preventDefault();
         var csrf_token = getCookie("csrftoken");
         $.ajax({
