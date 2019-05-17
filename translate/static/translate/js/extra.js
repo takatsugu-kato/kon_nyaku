@@ -27,15 +27,17 @@ $(function() {
                 }
             },
         }).done(function(data){
-            $("#result").append(
-                $('<div>', {
-                    id: 'result_message',
-                    class:'alert ' + data.type,
-                    role:'alert',
-                    html: data.message.join("<br/>")
-                })
-            )
-            setTimeout("$('#result_message').fadeOut('slow').queue(function() {this.remove();})", 3000)
+            $.notify({
+                message: data.message.join("<br/>"),
+            },{
+                type: data.type,
+                timer: 1000,
+                delay: 3000,
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                }
+            });
             refreshFileList()
         });
     });

@@ -17,7 +17,7 @@ class DocumentForm(forms.ModelForm):
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
             'file_session_key': forms.HiddenInput(),
-            'document': forms.FileInput(attrs={'style': 'display:none'}),
+            'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.xlsx,.docx,.pptx'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
         }
@@ -26,7 +26,7 @@ class DocumentForm(forms.ModelForm):
         name = self.cleaned_data['name']
         path_split = os.path.splitext(name)
         if path_split[1] not in SUPPORTED_FILE_FORMAT:
-            raise forms.ValidationError('name のバリデーションに引っかかりました。')
+            raise forms.ValidationError('This file does not support.')
         return name
 
     # def clean_source_lang(self): #ToDo source_langとtarget_langが同じだったときのバリデーションをいれる

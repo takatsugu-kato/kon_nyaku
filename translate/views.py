@@ -18,16 +18,17 @@ from lib.xlf import Xlf
 from .consts import STATUS
 
 # Create your views here.
-def file_list(request):
+def translator(request):
     """get list of files"""
     default_form_value = {'target_lang':'ja'}
     form = DocumentForm(initial=default_form_value)
 
     return render(request,
-                  'translate/file_list.html',
+                  'translate/translator.html',
                   {'file_list_data': create_file_list_tbody_html(request),
                    'form': form,
-                   'STATUS': STATUS},
+                   'STATUS': STATUS,
+                   'nbar': "trans"},
                  )
 
 def upload_file(request):
@@ -42,12 +43,12 @@ def upload_file(request):
 
         if form.is_valid():
             form.save()
-            result = {"type": "alert-success", "message": ["Uploaded"]}
+            result = {"type": "success", "message": ["Uploaded"]}
         else:
             message = ""
             for error in form.errors:
                 message = message + form.errors[error]
-            result = {"type": "alert-danger", "message": message}
+            result = {"type": "danger", "message": message}
         return JsonResponse(result)#この段階でmessageがstrからarrayになる　なぜ？
 
 def file_tra(request, file_id):
