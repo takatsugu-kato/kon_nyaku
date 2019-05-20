@@ -110,10 +110,10 @@ def create_file_list_tbody_html(request):
         modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
 
         translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
-        delete_button_html = '<button class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></button>\n'
+        delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
         if file.status == 1:
             done_flag = 0
-            delete_button_html = '<button class="btn btn-danger btn-mergen-sm del_confirm disabled" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></button>\n'
+            delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
         if file.progress == 100:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
                             '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download><i class="fas fa-download"></i> Download</a></div></div>'
