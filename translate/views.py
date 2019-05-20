@@ -50,6 +50,8 @@ def upload_file(request):
                 message = message + form.errors[error]
             result = {"type": "danger", "message": message}
         return JsonResponse(result)#この段階でmessageがstrからarrayになる　なぜ？
+    else:
+        return JsonResponse({"type": "danger", "message": ["File is not selected"]})
 
 def file_tra(request, file_id):
     """translate file"""
