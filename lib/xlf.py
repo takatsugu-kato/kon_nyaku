@@ -360,13 +360,14 @@ class XlfString():
 
         repatter = re.compile(r'<(ex|bx) id="([0-9]+)"/>')
         match = repatter.search(self.string)
-        if match:
+        while match:
             self.paired_placeholder_id = match.group(2)
-            self.string = repatter.sub("", self.string)
+            self.string = repatter.sub("", self.string, 1)
             if match.group(1) == "ex":
                 self.exist_ex_tag = True
             elif match.group(1) == "bx":
                 self.exist_bx_tag = True
+            match = repatter.search(self.string)
 
     def __replace_placeholder_to_notran_tag(self):
         """
