@@ -74,6 +74,10 @@ $(function() {
         }
     });
 
+    $('#display_file_name').click(function() {
+        $('#id_document').click();
+    });
+
     //reflesh file list
     function refreshFileList(){
         var html;

@@ -3,3 +3,12 @@ a.progress_a {color:white;}
         padding-top: 2px;
         padding-bottom: 2px;
     }
+
+#display_file_name {
+    margin-left: -2px;
+    z-index: 1;
+}
+
+#choose_file{
+    z-index: 2;
+}
