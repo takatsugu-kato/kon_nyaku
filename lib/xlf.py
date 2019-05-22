@@ -125,7 +125,11 @@ class Xlf():
                 target = trans_unit.find('xliff:target', self.namespace)
                 trans_unit.remove(target)
                 trans_unit.append(new_target_element)
-        self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
+        try:
+            self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
+            return True
+        except: # pylint: disable=W0702
+            return False
 
     def __create_xml_string_for_element(self, segment_obj):
         """

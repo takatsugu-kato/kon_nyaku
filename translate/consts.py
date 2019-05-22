@@ -116,6 +116,9 @@ STATUS = {
     0: 'Not started',
     1: 'Translating',
     2: 'Translated',
-    10: 'Error',
-    100: 'Error',
+    #Okapi Errors
+    101: 'create_xlf error',
+    102: 'create_transled_file error',
+    #Xlf Errors
+    201: 'back_to_xlf error',
 }

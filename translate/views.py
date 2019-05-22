@@ -83,15 +83,26 @@ def translate_xlf(file_id):
     # to_trans_file = "./sample_file/test.docx"
 
     okapi_obj = Okapi(source_lang, target_lang)
-    okapi_obj.create_xlf(to_trans_file)
-
+    res = okapi_obj.create_xlf(to_trans_file)
+    if not res:
+        file.status = 101
+        file.save()
+        return
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
     xlf_obj.translate(translation_model, delete_format_tag=False, pseudo=True, django_file_obj=file)
-    xlf_obj.back_to_xlf()
 
-    okapi_obj.create_transled_file(to_trans_file + ".xlf")
+    res = xlf_obj.back_to_xlf()
+    if not res:
+        file.status = 201
+        file.save()
+        return
 
+    res = okapi_obj.create_transled_file(to_trans_file + ".xlf")
+    if not res:
+        file.status = 102
+        file.save()
+        return
     file.status = 2
     file.save()
 
@@ -113,15 +124,20 @@ def create_file_list_tbody_html(request):
 
         translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
         delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
+
+        #set done flag
         if file.status == 1:
             done_flag = 0
             delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
+
         if file.progress == 100:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
                             '<a class="progress_a" href="/translate/download/' + str(file.id) + '" download><i class="fas fa-download"></i> Download</a></div></div>'
         elif file.status == 0:
-            progress_html = "not started"
+            progress_html = STATUS[file.status]
             translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"><i class="fas fa-language"></i></a>\n'
+        elif file.status > 100:
+            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%">' + STATUS[file.status] + '</div></div>'
         else:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
 
