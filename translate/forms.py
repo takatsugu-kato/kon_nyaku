@@ -9,13 +9,14 @@ from .consts import SUPPORTED_FILE_FORMAT
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = File
-        fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key')
+        fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key', 'delete_format_tag')
 
         SOURCE_LANG = LANG
         TARGET_LANG = LANG
 
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
+            'delete_format_tag': forms.CheckboxInput(),
             'file_session_key': forms.HiddenInput(),
             'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.xlsx,.docx,.pptx'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),

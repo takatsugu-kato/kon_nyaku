@@ -90,7 +90,7 @@ def translate_xlf(file_id):
         return
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(translation_model, delete_format_tag=False, pseudo=True, django_file_obj=file)
+    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, pseudo=True, django_file_obj=file)
 
     res = xlf_obj.back_to_xlf()
     if not res:
@@ -141,15 +141,20 @@ def create_file_list_tbody_html(request):
         else:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
 
+        if file.delete_format_tag:
+            delete_format_tag_html = '<i class="fas fa-eraser"></i>'
+        else:
+            delete_format_tag_html = ""
         html = html + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
             '          <td>' + file.target_lang + '</td>\n'\
+            '          <td class="text-center">' + delete_format_tag_html + '</td>\n'\
             '          <td>' + progress_html + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
             '          <td>' + modified_date_str + '</td>\n'\
-            '          <td>\n'\
+            '          <td class="text-center">\n'\
             '            ' + translate_button_html + \
             '            ' + delete_button_html + \
             '          </td>\n'\

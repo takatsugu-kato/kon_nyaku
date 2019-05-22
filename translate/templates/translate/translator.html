@@ -13,6 +13,7 @@
         <a href="#" class="btn btn-warning btn-xs mb-2 col-2" id="swap_language"><i class='fas fa-exchange-alt'></i></a>
         {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
       </div>
+      {% bootstrap_field form.delete_format_tag %}
       <div class="form-row">
         <div class="input-group col-10">
           <label id="choose_file">
@@ -33,6 +34,7 @@
         <th scope="col">Name</th>
         <th scope="col">sl</th>
         <th scope="col">tl</th>
+        <th scope="col">Tags</th>
         <th scope="col">Progress</th>
         <th scope="col">Created</th>
         <th scope="col">Modified</th>
