@@ -74,8 +74,36 @@ $(function() {
         }
     });
 
+    //file name input box to clickable
     $('#display_file_name').click(function() {
         $('#id_document').click();
+    });
+
+    //swap language when button click
+    $('#swap_language').click(function() {
+        source_lang = $('#id_source_lang').val();
+        $('#id_source_lang').val($('#id_target_lang').val());
+        $('#id_target_lang').val(source_lang);
+    });
+
+    //swap language when select same language
+    $("#id_source_lang").on('focus', function () {
+        previous = this.value;
+    }).change(function() {
+        source_lang = $('#id_source_lang').val();
+        if (source_lang === $('#id_target_lang').val()){
+            $('#id_target_lang').val(previous);
+            previous = this.value;
+        }
+    });
+    $("#id_target_lang").on('focus', function () {
+        previous = this.value;
+    }).change(function() {
+        source_lang = $('#id_target_lang').val();
+        if (source_lang === $('#id_source_lang').val()){
+            $('#id_source_lang').val(previous);
+            previous = this.value;
+        }
     });
 
     //reflesh file list
