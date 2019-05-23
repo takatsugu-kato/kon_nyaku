@@ -1,14 +1,11 @@
-import json
 import mimetypes
 import os
 import io
 import urllib.parse
 import pytz
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, JsonResponse
 from background_task import background
-from django.core import serializers
-from django.utils import dateformat
 
 from translate.models import File
 from translate.forms import DocumentForm
