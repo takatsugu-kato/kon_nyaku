@@ -12,6 +12,7 @@ from translate.forms import DocumentForm
 from translate.forms import TextForm
 from lib.okapi import Okapi
 from lib.xlf import Xlf
+from lib.text_translator import translate_by_google
 
 from .consts import STATUS
 
@@ -36,7 +37,7 @@ def translate_text(request):
     #Set the session key to POST
     copied_post_data = request.POST.copy()
     copied_post_data['file_session_key'] = request.session.session_key
-
+    copied_post_data['chara_count'] = len(copied_post_data.get('source_text'))
     #get ipaddress
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -48,8 +49,12 @@ def translate_text(request):
     form = TextForm(copied_post_data, initial=default_form_value)
 
     if form.is_valid():
-        # form.save()
-        result = {"result": "success", "text": "hogehoge"}
+        form.save()
+        transed_text = translate_by_google(copied_post_data.get('source_text'),
+                                           copied_post_data.get('source_lang'),
+                                           copied_post_data.get('target_lang'),
+                                           pseudo=False)
+        result = {"result": "success", "text": transed_text}
     else:
         message = ""
         for error in form.errors:

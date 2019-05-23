@@ -18,7 +18,6 @@ class DocumentForm(forms.ModelForm):
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
             'delete_format_tag': forms.CheckboxInput(),
-            'file_session_key': forms.HiddenInput(),
             'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.xlsx,.docx,.pptx'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
@@ -38,14 +37,12 @@ class DocumentForm(forms.ModelForm):
 class TextForm(forms.ModelForm):
     class Meta:
         model = Text
-        fields = ('source_lang', 'target_lang', 'file_session_key', 'ip_address')
+        fields = ('source_lang', 'target_lang', 'file_session_key', 'ip_address', 'chara_count')
 
         SOURCE_LANG = LANG
         TARGET_LANG = LANG
 
         widgets = {
-            'file_session_key': forms.HiddenInput(),
-            'ip_address': forms.HiddenInput(),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
         }

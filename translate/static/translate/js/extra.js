@@ -40,7 +40,7 @@ $(function() {
                     }
                 });
             }else{
-                $('#target_text').val(data.text)
+                $('#target_text').val(data.text.replace("<br>", "\n"))
             }
         });
     });
