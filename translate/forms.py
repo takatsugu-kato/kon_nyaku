@@ -2,6 +2,7 @@ import os
 
 from django import forms
 from translate.models import File
+from translate.models import Text
 
 from .consts import LANG
 from .consts import SUPPORTED_FILE_FORMAT
@@ -17,7 +18,6 @@ class DocumentForm(forms.ModelForm):
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
             'delete_format_tag': forms.CheckboxInput(),
-            'file_session_key': forms.HiddenInput(),
             'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.xlsx,.docx,.pptx'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
@@ -34,4 +34,15 @@ class DocumentForm(forms.ModelForm):
     #     source_lang = self.cleaned_data['source_lang']
     #     raise forms.ValidationError('source_lang のバリデーションに引っかかりました。')
 
+class TextForm(forms.ModelForm):
+    class Meta:
+        model = Text
+        fields = ('source_lang', 'target_lang', 'file_session_key', 'ip_address', 'chara_count')
 
+        SOURCE_LANG = LANG
+        TARGET_LANG = LANG
+
+        widgets = {
+            'source_lang': forms.Select(choices=SOURCE_LANG),
+            'target_lang': forms.Select(choices=TARGET_LANG),
+        }
