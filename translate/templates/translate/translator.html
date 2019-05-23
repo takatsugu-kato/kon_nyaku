@@ -3,15 +3,38 @@
 {% block title %}Kon-nyaku{% endblock title %}
 
 {% block content %}
+  <h2 class="border-bottom mt-2">Select Language</h2>
+  <div class="row">
+    <div class="col-5">Source Language</div>
+    <div class="col-5 offset-md-2">Target Language</div>
+    {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
+    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language"><i class='fas fa-exchange-alt'></i></a>
+    {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
+  </div>
+  <h2 class="border-bottom mt-2">Text Translator</h2>
+  <form method="post" enctype="multipart/form-data" id="translate_text">
+    {% csrf_token %}
+    <input type="hidden" name="source_lang" id="text_translator_source_lang">
+    <input type="hidden" name="target_lang" id="text_translator_target_lang">
+    <div class="form-row">
+      <div class="col-5">
+        <textarea class="form-control" rows="10" id="source_text"></textarea>
+      </div>
+      <div class="col-2">
+        {% bootstrap_button "<i class='fas fa-language'></i> Translate" id="translate_text_btn" button_type="submit" button_class="w-100 btn-primary" %}
+      </div>
+      <div class="col-5">
+        <textarea class="form-control" rows="10" id="target_text"></textarea>
+      </div>
+    </div>
+  </form>
+
   <h2 class="border-bottom mt-2">File Translator</h2>
   <form method="post" enctype="multipart/form-data" id="file_upload">
     <div class="form-row">
-        <div class="col-5">Source Language</div>
-        <div class="col-5 offset-md-2">Target Language</div>
         {% csrf_token %}
-        {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
-        <a href="#" class="btn btn-warning btn-xs mb-2 col-2" id="swap_language"><i class='fas fa-exchange-alt'></i></a>
-        {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
+        <input type="hidden" name="source_lang" id="file_translator_source_lang">
+        <input type="hidden" name="target_lang" id="file_translator_target_lang">
       </div>
       {% bootstrap_field form.delete_format_tag %}
       <div class="form-row">

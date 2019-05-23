@@ -12,6 +12,7 @@ from django.utils import dateformat
 
 from translate.models import File
 from translate.forms import DocumentForm
+from translate.forms import TextForm
 from lib.okapi import Okapi
 from lib.xlf import Xlf
 
@@ -30,6 +31,34 @@ def translator(request):
                    'STATUS': STATUS,
                    'nbar': "trans"},
                  )
+
+def translate_text(request):
+    """translate text"""
+
+    default_form_value = {'target_lang':'ja'}
+    #Set the session key to POST
+    copied_post_data = request.POST.copy()
+    copied_post_data['file_session_key'] = request.session.session_key
+
+    #get ipaddress
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    copied_post_data['ip_address'] = ip_address
+
+    form = TextForm(copied_post_data, initial=default_form_value)
+
+    if form.is_valid():
+        # form.save()
+        result = {"result": "success", "text": "hogehoge"}
+    else:
+        message = ""
+        for error in form.errors:
+            message = message + form.errors[error]
+        result = {"result": "error", "text": message}
+    return JsonResponse(result)
 
 def upload_file(request):
     """upload file"""

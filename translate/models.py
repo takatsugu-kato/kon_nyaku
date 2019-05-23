@@ -16,3 +16,17 @@ class File(models.Model):
 
     def __str__(self):
         return self.name
+
+class Text(models.Model):
+    """Text"""
+    file_session_key = models.CharField('Session Key', max_length=40, default='')
+    ip_address = models.GenericIPAddressField('IP Address')
+    status = models.CharField('Status', max_length=16, default='')
+    source_lang = models.CharField('Source Language', max_length=8, default='')
+    target_lang = models.CharField('Target Language', max_length=8, default='')
+    created_date = models.DateTimeField('Created', auto_now_add=True)
+    modified_date = models.DateTimeField('Modified', auto_now=True)
+    chara_count = models.PositiveIntegerField('Character Count', blank=True, default=0)
+
+    def __str__(self):
+        return self.ip_address

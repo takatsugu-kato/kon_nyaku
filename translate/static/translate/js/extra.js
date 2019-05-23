@@ -8,10 +8,50 @@ $(function() {
         $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
     });
 
+    //text translation
+    $('#translate_text_btn').on('click', function() {
+        event.preventDefault();
+        var csrf_token = getCookie("csrftoken");
+        //set file translator language when language changed
+        $('#text_translator_source_lang').val($('#id_source_lang').val());
+        $('#text_translator_target_lang').val($('#id_target_lang').val());
+        $.ajax({
+            type:'POST',
+            url:"/translate/translate_text/",
+            data: new FormData($("#translate_text").get(0)),
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            },
+        }).done(function(data){
+            if (data.result == "error") {
+                $.notify({
+                    message: data.text,
+                },{
+                    type: "danger",
+                    timer: 1000,
+                    delay: 3000,
+                    placement: {
+                        from: 'top',
+                        align: 'center'
+                    }
+                });
+            }else{
+                $('#target_text').val(data.text)
+            }
+        });
+    });
+
     //upload file
     $('#upload').on('click', function() {
         event.preventDefault();
         var csrf_token = getCookie("csrftoken");
+        //set file translator language when language changed
+        $('#file_translator_source_lang').val($('#id_source_lang').val());
+        $('#file_translator_target_lang').val($('#id_target_lang').val());
         $.ajax({
             type:'POST',
             url:"/translate/upload_file/",
@@ -93,17 +133,17 @@ $(function() {
         source_lang = $('#id_source_lang').val();
         if (source_lang === $('#id_target_lang').val()){
             $('#id_target_lang').val(previous);
-            previous = this.value;
         }
+        previous = this.value;
     });
     $("#id_target_lang").on('focus', function () {
         previous = this.value;
     }).change(function() {
-        source_lang = $('#id_target_lang').val();
-        if (source_lang === $('#id_source_lang').val()){
+        target_lang = $('#id_target_lang').val();
+        if (target_lang === $('#id_source_lang').val()){
             $('#id_source_lang').val(previous);
-            previous = this.value;
         }
+        previous = this.value;
     });
 
     //reflesh file list

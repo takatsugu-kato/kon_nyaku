@@ -12,3 +12,10 @@ a.progress_a {color:white;}
 #choose_file{
     z-index: 2;
 }
+
+#translate_text_btn{
+    position: absolute;
+    top: 50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+}

@@ -2,6 +2,7 @@ import os
 
 from django import forms
 from translate.models import File
+from translate.models import Text
 
 from .consts import LANG
 from .consts import SUPPORTED_FILE_FORMAT
@@ -34,4 +35,17 @@ class DocumentForm(forms.ModelForm):
     #     source_lang = self.cleaned_data['source_lang']
     #     raise forms.ValidationError('source_lang のバリデーションに引っかかりました。')
 
+class TextForm(forms.ModelForm):
+    class Meta:
+        model = Text
+        fields = ('source_lang', 'target_lang', 'file_session_key', 'ip_address')
 
+        SOURCE_LANG = LANG
+        TARGET_LANG = LANG
+
+        widgets = {
+            'file_session_key': forms.HiddenInput(),
+            'ip_address': forms.HiddenInput(),
+            'source_lang': forms.Select(choices=SOURCE_LANG),
+            'target_lang': forms.Select(choices=TARGET_LANG),
+        }
