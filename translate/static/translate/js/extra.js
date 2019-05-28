@@ -8,6 +8,11 @@ $(function() {
         $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
     });
 
+    //focus del button when modal windows is displayed
+    $('#deleteModal').on('shown.bs.modal', function () {
+        $('#del_url').focus();
+    });
+
     //text translation
     $('#translate_text_btn').on('click', function() {
         event.preventDefault();
