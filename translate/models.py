@@ -4,6 +4,7 @@ class File(models.Model):
     """File"""
     name = models.CharField('File name', max_length=255)
     file_session_key = models.CharField('Session Key', max_length=40, default='')
+    ip_address = models.GenericIPAddressField('IP Address', default="")
     status = models.IntegerField('Status', blank=True, default=0)
     delete_format_tag = models.BooleanField("Delete Format Tags", default=False)
     source_lang = models.CharField('Source Language', max_length=8, default='')
@@ -12,6 +13,7 @@ class File(models.Model):
     created_date = models.DateTimeField('Created', auto_now_add=True)
     modified_date = models.DateTimeField('Modified', auto_now=True)
     document = models.FileField('File', upload_to='media/')
+    chara_count = models.PositiveIntegerField('Character Count', blank=True, default=0)
 
     def __str__(self):
         return self.name

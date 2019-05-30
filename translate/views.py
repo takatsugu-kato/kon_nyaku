@@ -39,12 +39,7 @@ def translate_text(request):
     copied_post_data['file_session_key'] = request.session.session_key
     copied_post_data['chara_count'] = len(copied_post_data.get('source_text'))
     #get ipaddress
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip_address = x_forwarded_for.split(',')[0]
-    else:
-        ip_address = request.META.get('REMOTE_ADDR')
-    copied_post_data['ip_address'] = ip_address
+    copied_post_data['ip_address'] = get_ip_address(request)
 
     form = TextForm(copied_post_data, initial=default_form_value)
 
@@ -69,6 +64,9 @@ def upload_file(request):
         #Set the session key to POST
         copied_post_data = request.POST.copy()
         copied_post_data['file_session_key'] = request.session.session_key
+
+        #get ipaddress
+        copied_post_data['ip_address'] = get_ip_address(request)
 
         form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
 
@@ -136,6 +134,14 @@ def translate_xlf(file_id):
         return
     file.status = 2
     file.save()
+
+def get_ip_address(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    return ip_address
 
 def get_file_list_data(request):
     return JsonResponse(create_file_list_tbody_html(request))
