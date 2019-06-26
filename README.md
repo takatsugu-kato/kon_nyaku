@@ -3,12 +3,21 @@ File translator used Google Translator API
 
 ## Requiments
 - Python 3.x
+    - `pip install Django`
+    - `pip install bootstrap4`
+    - `pip install django-background-tasks`
+    - `pip install google-cloud-translate`
+    - `pip install django-bootstrap4`
 - Okapi
   - Java 1.8
 
 ## Installation
 ### Okapi
 Set the PATH
+### Django migrate
+```
+python manage.py migrate
+```
 
 ## Usage
 ```
