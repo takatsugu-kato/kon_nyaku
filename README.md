@@ -17,7 +17,10 @@ Set the PATH
 ### Django migrate
 ```
 python manage.py migrate
+python manage.py createsuperuser
 ```
+### Set Google credential
+See this [site](https://cloud.google.com/translate/docs/quickstart-client-libraries).
 
 ## Usage
 ```
