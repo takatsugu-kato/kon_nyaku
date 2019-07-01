@@ -14,6 +14,7 @@ class File(models.Model):
     modified_date = models.DateTimeField('Modified', auto_now=True)
     document = models.FileField('File', upload_to='media/')
     chara_count = models.PositiveIntegerField('Character Count', blank=True, default=0)
+    delete_flag = models.BooleanField('Deleted', blank=True, default=0)
 
     def __str__(self):
         return self.name

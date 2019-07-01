@@ -52,7 +52,7 @@ def lf2br(string):
 @background(queue='translate_queue', schedule=5)
 def translate_file(file_id):
     """translate file
-    
+
     Args:
         file_id (int): to translate file id
     """
@@ -118,7 +118,7 @@ def create_file_list_tbody_html(request, STATUS):
     """
     jst = pytz.timezone('Asia/Tokyo')
 
-    files = File.objects.filter(file_session_key=request.session.session_key).order_by('id').reverse()
+    files = File.objects.filter(file_session_key=request.session.session_key).filter(delete_flag=False).order_by('id').reverse()
     html = ""
     done_flag = 1
     for file in files:
@@ -169,7 +169,7 @@ def create_file_list_tbody_html(request, STATUS):
 
 def delete_file(file_id):
     """Delete file
-    
+
     Args:
         file_id (int): to delete file id
     """
@@ -185,4 +185,5 @@ def delete_file(file_id):
         os.remove(xlf_file_path)
     if os.path.exists(str(file.document)):
         os.remove(str(file.document))
-    file.delete()
+    file.delete_flag = True
+    file.save()

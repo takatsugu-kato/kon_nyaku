@@ -30,3 +30,9 @@ python manage.py process_tasks
 #run server
 python manage.py runserver
 ```
+## Tips for develop
+### change model
+```
+python manage.py makemigrations
+python manage.py migrate
+```
