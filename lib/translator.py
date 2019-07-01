@@ -74,7 +74,7 @@ def translate_file(file_id):
         return
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, pseudo=True, django_file_obj=file)
+    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, pseudo=False, django_file_obj=file)
 
     res = xlf_obj.back_to_xlf()
     if not res:
