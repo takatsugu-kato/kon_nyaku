@@ -35,7 +35,7 @@ def translate_text_by_google(string, source_language, target_language, model="nm
         source_language=source_language,
         target_language=target_language)
     translated_text = translation['translatedText']
-    return translated_text
+    return br2lf(translated_text)
 
 def lf2br(string):
     """change lf to br
@@ -47,6 +47,18 @@ def lf2br(string):
         str: changed string
     """
     string_new = '<br>'.join(string.splitlines())
+    return string_new
+
+def br2lf(string):
+    """change br to lf
+
+    Args:
+        string (str): to change string
+
+    Returns:
+        str: changed string
+    """
+    string_new = string.replace('<br>', '\n')
     return string_new
 
 @background(queue='translate_queue', schedule=5)
