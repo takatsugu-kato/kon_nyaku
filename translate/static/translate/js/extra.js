@@ -2,6 +2,13 @@ $(function() {
 
     refreshFileList()
 
+    // auto size the textarea
+    // reference: https://www.webantena.net/javascriptjquery/plugin-jquery-autosize/
+    autosize(document.querySelectorAll('textarea'));
+    $("textarea").on("keyup",function(){
+        setTargetTextBoxHeigth();
+    });
+
     //show modal window
     $('table').on('click', '.del_confirm', function(){
         $("#del_pk").text($(this).data("pk"));
@@ -45,7 +52,7 @@ $(function() {
                     }
                 });
             }else{
-                $('#target_text').val(data.text.replace("<br>", "\n"))
+                $('#target_text').val(data.text)
             }
         });
     });
@@ -186,5 +193,9 @@ $(function() {
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    function setTargetTextBoxHeigth(){
+        $('#target_text').height($('#source_text').height());
     }
 });
