@@ -17,7 +17,7 @@ class DocumentForm(forms.ModelForm):
 
         widgets = {
             'name': forms.HiddenInput(attrs={'id': "id_name"}),
-            'delete_format_tag': forms.CheckboxInput(),
+            'delete_format_tag': forms.CheckboxInput(attrs={'checked' : ''}),
             'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.xlsx,.docx,.pptx'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
