@@ -20,6 +20,7 @@ class Xlf():
         self.source_language = ""
         self.target_language = ""
         self.trans_unit_count = 0
+        self.charactor_count = 0
         self.path = path
         self.tree = etree.parse(path)
         etree.register_namespace('xliff', 'urn:oasis:names:tc:xliff:document:1.2')
@@ -87,13 +88,13 @@ class Xlf():
         else:
             translate_client = translate.Client()
 
-        count = 0
+        unit_count = 0
         for file in self.files:
             for trans_unit in file.trans_units:
 
-                count = count + 1
+                unit_count = unit_count + 1
                 if django_file_obj:
-                    django_file_obj.progress = count/self.trans_unit_count*100
+                    django_file_obj.progress = unit_count/self.trans_unit_count*100
                     django_file_obj.save()
 
                 for segment in trans_unit.seg_target:
@@ -102,6 +103,7 @@ class Xlf():
                         xlfstring.delete_inline_tag()
                     else:
                         xlfstring.change_xlf_inline_tag_to_i_tag()
+                    self.charactor_count = self.charactor_count + len(xlfstring.string)
                     translation = translate_client.translate(
                         xlfstring.string,
                         model=model,

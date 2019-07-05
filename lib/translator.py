@@ -87,6 +87,7 @@ def translate_file(file_id):
         file.status = 102
         file.save()
         return
+    file.chara_count = xlf_obj.charactor_count
     file.status = 2
     file.save()
 
