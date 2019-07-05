@@ -8,7 +8,7 @@
     <div class="col-5">Source Language</div>
     <div class="col-5 offset-md-2">Target Language</div>
     {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
-    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language"><i class='fas fa-exchange-alt'></i></a>
+    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language" data-toggle="tooltip" data-placement="top" title="swap languages"><i class='fas fa-exchange-alt'></i></a>
     {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
   </div>
   <h2 class="border-bottom mt-2">Text Translator</h2>
@@ -19,7 +19,7 @@
     <div class="form-row">
       <div class="col-5">
         <textarea class="form-control" rows="10" id="source_text" name="source_text"></textarea>
-        <i class="fas fa-times" id="text_clear"></i>
+        <i class="fas fa-times" id="text_clear" data-toggle="tooltip" data-placement="top" title="clear text"></i>
       </div>
       <div class="col-2">
         {% bootstrap_button "<i class='fas fa-language'></i> Translate" id="translate_text_btn" button_type="submit" button_class="w-100 btn-primary" %}
