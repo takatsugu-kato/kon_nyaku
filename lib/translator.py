@@ -139,7 +139,7 @@ def create_file_list_tbody_html(request, STATUS):
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
         translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
-        delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
+        delete_button_html = '<span data-toggle="tooltip" data-placement="top" title="delete"><a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a></span>\n'
 
         #set done flag
         if file.status == 1:
@@ -151,7 +151,7 @@ def create_file_list_tbody_html(request, STATUS):
                             '<a class="progress_a" href="/translate/file_download/' + str(file.id) + '" download><i class="fas fa-download"></i> Download</a></div></div>'
         elif file.status == 0:
             progress_html = STATUS[file.status]
-            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"><i class="fas fa-language"></i></a>\n'
+            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm" data-toggle="tooltip" data-placement="top" title="translate"><i class="fas fa-language"></i></a>\n'
         elif file.status > 100:
             progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%">' + STATUS[file.status] + '</div></div>'
         else:
