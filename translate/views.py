@@ -90,7 +90,7 @@ def file_tra(request, file_id):
 
 def file_del(request, file_id):
     """delete file"""
-    lib.translator.delete_file(file_id)
+    lib.translator.set_delete_flag(file_id)
     return HttpResponse()
 
 

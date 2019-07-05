@@ -125,8 +125,6 @@ def create_file_list_tbody_html(request, STATUS):
     for file in files:
         created_date = file.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
-        modified_date = file.modified_date.astimezone(jst)
-        modified_date_str = modified_date.strftime('%Y-%m-%d %H:%M')
 
         translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
         delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
@@ -159,7 +157,6 @@ def create_file_list_tbody_html(request, STATUS):
             '          <td class="text-center">' + delete_format_tag_html + '</td>\n'\
             '          <td>' + progress_html + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
-            '          <td>' + modified_date_str + '</td>\n'\
             '          <td class="text-center">\n'\
             '            ' + translate_button_html + \
             '            ' + delete_button_html + \
@@ -168,7 +165,7 @@ def create_file_list_tbody_html(request, STATUS):
     return_json = {"html": html, "done_flag": done_flag}
     return return_json
 
-def delete_file(file_id):
+def set_delete_flag(file_id):
     """Delete file
 
     Args:
