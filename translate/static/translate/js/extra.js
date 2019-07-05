@@ -9,6 +9,18 @@ $(function() {
         setTargetTextBoxHeigth();
     });
 
+
+    $('textarea').focusin(function(e) {
+        $('#text_clear').show();
+    }).focusout(function(e) {
+        $('#text_clear').hide();
+    });
+
+    //clear text
+    $('#text_clear').click(function(){
+        $('textarea').val('');
+    });
+
     //show modal window
     $('table').on('click', '.del_confirm', function(){
         $("#del_pk").text($(this).data("pk"));
