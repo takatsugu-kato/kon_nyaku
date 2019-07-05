@@ -27,6 +27,13 @@ def translator(request):
                    'nbar': "trans"},
                  )
 
+def help(request):
+    """help page"""
+    return render(request,
+                  'translate/help.html',
+                  {'nbar': "help"},
+                 )
+
 def translate_text(request):
     """translate text"""
 
