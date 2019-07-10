@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import socket
+
+# Separete setting for Develop or Production server
+if socket.gethostname() == "WIN-518": # Develop
+    DEBUG = True
+else: # Productuin
+    DEBUG = False
+    ADMINS = (
+        ('Takatsugu Kato', 'kato@ideainstitute.co.jp'),
+    )
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,8 +32,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'f!)d@!2a)ka%_bt0uq9mu)k$!5gl&yqg3m^mvj+oa9ckk0_j_5'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
