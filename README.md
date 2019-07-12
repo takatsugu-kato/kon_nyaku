@@ -8,6 +8,7 @@ File translator used Google Translator API
     - `pip install django-background-tasks`
     - `pip install google-cloud-translate`
     - `pip install django-bootstrap4`
+    - `pip install lxml`
 - Okapi
   - Java 1.8
 
