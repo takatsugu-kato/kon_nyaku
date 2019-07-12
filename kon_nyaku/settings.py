@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import socket
+import environ
 
 # Separete setting for Develop or Production server
 if socket.gethostname() == "WIN-518": # Develop
@@ -25,13 +26,16 @@ else: # Productuin
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#set google credential env
+env = environ.Env()
+env_file = os.path.join(BASE_DIR, '.env')
+env.read_env(env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'f!)d@!2a)ka%_bt0uq9mu)k$!5gl&yqg3m^mvj+oa9ckk0_j_5'
-
 
 ALLOWED_HOSTS = ["*"]
 
