@@ -3,6 +3,7 @@ import os
 import io
 import urllib.parse
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 
@@ -11,6 +12,12 @@ from translate.forms import TextForm
 from translate.models import File
 import lib.translator
 from .consts import STATUS
+
+def index(request):
+    return redirect('translate/translator')
+
+def translate_index(request):
+    return redirect('translate:translator')
 
 # Create your views here.
 def translator(request):
