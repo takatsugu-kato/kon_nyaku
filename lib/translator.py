@@ -4,6 +4,7 @@ This modules is related to translator
 import os
 import pytz
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from background_task import background
 from google.cloud import translate
@@ -70,6 +71,7 @@ def translate_file(file_id):
     """
     file = File.objects.get(pk=file_id)
     to_trans_file = str(file.document)
+    to_trans_file = os.path.join(settings.MEDIA_ROOT, to_trans_file)
 
     print("Translating {0}".format(to_trans_file))
 
