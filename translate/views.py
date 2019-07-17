@@ -4,6 +4,7 @@ import io
 import urllib.parse
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 
 from translate.forms import DocumentForm
 from translate.forms import TextForm
@@ -114,7 +115,7 @@ def file_download(request, file_id):
     root, ext = os.path.splitext(str(file.document))
     translated_file_path = root + ".out" + ext
 
-    with open(translated_file_path, 'rb') as in_file:
+    with open(os.path.join(settings.MEDIA_ROOT, translated_file_path), 'rb') as in_file:
         binary = io.BytesIO(in_file.read())
 
     mime = mimetypes.guess_type(translated_file_path)
