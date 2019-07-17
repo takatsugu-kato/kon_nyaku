@@ -3,6 +3,7 @@ from translate import views
 
 app_name = 'translate'
 urlpatterns = [
+    path('', views.translate_index, name='translate_index'), # Index
     path('translator/', views.translator, name='translator'),   # Translation view
     path('help/', views.help, name='help'),   # Help view
     path('translator/tra/<int:file_id>/', views.file_tra, name='file_tra'),  # Translate
