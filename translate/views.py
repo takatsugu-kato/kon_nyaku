@@ -77,6 +77,8 @@ def upload_file(request):
     if request.FILES:
         #Set the session key to POST
         copied_post_data = request.POST.copy()
+        if not request.session.session_key:
+            request.session.create()
         copied_post_data['file_session_key'] = request.session.session_key
 
         #get ipaddress
