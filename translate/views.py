@@ -48,6 +48,8 @@ def translate_text(request):
     default_form_value = {'target_lang':'ja'}
     #Set the session key to POST
     copied_post_data = request.POST.copy()
+    if not request.session.session_key:
+        request.session.create()
     copied_post_data['file_session_key'] = request.session.session_key
     copied_post_data['chara_count'] = len(copied_post_data.get('source_text'))
     #get ipaddress
