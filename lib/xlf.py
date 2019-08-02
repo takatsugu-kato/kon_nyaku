@@ -58,10 +58,13 @@ class Xlf():
                 trans_unit_obj = TransUnit(trans_unit_element.get('id'))
 
                 trans_unit_obj.source = self.__create_seg_obj(trans_unit_element, "source")
-                trans_unit_obj.seg_source = self.__create_seg_obj(trans_unit_element, "seg-source")
-                trans_unit_obj.seg_target = self.__create_seg_obj(trans_unit_element, "target")
-                trans_unit_count = trans_unit_count + 1
-                file_obj.trans_units.append(trans_unit_obj)
+
+                # create and append seg_source and seg_target if source is not empty
+                if trans_unit_obj.source.string != '\n':
+                    trans_unit_obj.seg_source = self.__create_seg_obj(trans_unit_element, "seg-source")
+                    trans_unit_obj.seg_target = self.__create_seg_obj(trans_unit_element, "target")
+                    trans_unit_count = trans_unit_count + 1
+                    file_obj.trans_units.append(trans_unit_obj)
             files.append(file_obj)
         self.trans_unit_count = trans_unit_count
         return files
