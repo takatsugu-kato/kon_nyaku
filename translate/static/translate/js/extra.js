@@ -1,7 +1,6 @@
 $(function() {
 
     refreshFileList()
-
     // auto size the textarea
     // reference: https://www.webantena.net/javascriptjquery/plugin-jquery-autosize/
     autosize(document.querySelectorAll('textarea'));
@@ -9,15 +8,10 @@ $(function() {
         setTargetTextBoxHeigth();
     });
 
-    $('textarea').focusin(function(e) {
-        $('#text_clear').show();
-    }).focusout(function(e) {
-        $('#text_clear').hide();
-    });
-
     //clear text
     $('#text_clear').click(function(){
         $('textarea').val('');
+        console.log("clear")
     });
 
     //show modal window

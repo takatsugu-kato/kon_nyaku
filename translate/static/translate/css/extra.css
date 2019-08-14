@@ -22,13 +22,10 @@ a.progress_a {color:white;}
 
 #text_clear {
     position: absolute;
-    right: 4%;
-    top: -86%;
-    bottom: 0;
+    right: 16px;
+    margin-top: 6px;
     height: 18px;
-    margin: auto;
     font-size: 18px;
     cursor: pointer;
     color: #ccc;
-    display: none;
 }
