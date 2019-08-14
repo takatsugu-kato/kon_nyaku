@@ -3,6 +3,7 @@ This modules is related to translator
 """
 import os
 import pytz
+import html
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
@@ -36,7 +37,7 @@ def translate_text_by_google(string, source_language, target_language, model="nm
         source_language=source_language,
         target_language=target_language)
     translated_text = translation['translatedText']
-    return br2lf(translated_text)
+    return br2lf(html.unescape(translated_text))
 
 def lf2br(string):
     """change lf to br
