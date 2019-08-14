@@ -141,6 +141,9 @@ $(function() {
         source_lang = $('#id_source_lang').val();
         $('#id_source_lang').val($('#id_target_lang').val());
         $('#id_target_lang').val(source_lang);
+        source_text = $('#source_text').val();
+        $('#source_text').val($('#target_text').val());
+        $('#target_text').val(source_text);
     });
 
     //swap language when select same language
