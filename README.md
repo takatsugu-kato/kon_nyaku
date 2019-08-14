@@ -83,5 +83,5 @@ python manage.py collectstatic
 ### Change model
 If model is changes, you should run the following command.
 ```
-python manage.py migrate
+python3 manage.py migrate
 ```
