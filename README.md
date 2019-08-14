@@ -10,6 +10,8 @@ File translator used Google Translator API
     - `pip install django-bootstrap4`
     - `pip install lxml`
     - `pip install environ`
+    - `pip install django-crontab`
+    - `pip install python-dateutil`
 - Okapi
   - Java 1.8
 - supervisor
@@ -20,12 +22,15 @@ File translator used Google Translator API
 Set the PATH
 ### Django migrate
 ```
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py collectstatic
+python3 manage.py migrate
+python3 manage.py createsuperuser
+python3 manage.py collectstatic
+python3 manage.py crontab add
 chmod 766 db.sqlite3
 mkdir media
+mkdir log
 ```
+
 ### supervisor
 #### Install
 ```

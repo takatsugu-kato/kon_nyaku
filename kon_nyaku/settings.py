@@ -51,7 +51,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'translate',
     'bootstrap4',
-    'background_task'
+    'background_task',
+    'django_crontab'
+]
+
+CRONJOBS = [
+    ('0 4 * * *', 'translate.cron.set_delete_flag'), '>> ' + os.path.join(BASE_DIR, 'log/django-cron.log')
 ]
 
 MIDDLEWARE = [
