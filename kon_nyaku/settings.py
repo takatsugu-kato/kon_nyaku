@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 4 * * *', 'translate.cron.set_delete_flag'), '>> ' + os.path.join(BASE_DIR, 'log/django-cron.log')
+    ('0 4 * * *', 'translate.cron.set_delete_flag', '>> ' + os.path.join(BASE_DIR, 'log/django-cron.log'))
 ]
 
 MIDDLEWARE = [
