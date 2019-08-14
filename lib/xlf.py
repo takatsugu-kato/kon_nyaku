@@ -76,7 +76,7 @@ class Xlf():
         Args:
             model (str, optional): Defaults to "nmt". Model of Google translate.
                                    If you want to translate by smt, set the model to "base".
-                                   delete_format_tag (bool, optioanl): Defaults to False.
+            delete_format_tag (bool, optioanl): Defaults to False.
                                    Flag of to delete the format tag when translate.
             delete_format_tag (bool, optional): Defaults to False.
                                                If you want to delete inline format tag, set to True.
