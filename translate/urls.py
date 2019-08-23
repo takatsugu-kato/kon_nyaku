@@ -1,3 +1,6 @@
+"""
+urls
+"""
 from django.urls import path
 from translate import views
 # from translate import cron #only use for debug
@@ -6,7 +9,7 @@ app_name = 'translate'
 urlpatterns = [
     path('', views.translate_index, name='translate_index'), # Index
     path('translator/', views.translator, name='translator'),   # Translation view
-    path('help/', views.help, name='help'),   # Help view
+    path('help/', views.help_index, name='help'),   # Help view
     path('translator/tra/<int:file_id>/', views.file_tra, name='file_tra'),  # Translate
     path('translator/del/<int:file_id>/', views.file_del, name='file_del'),   # Delete
     path('get_file_list_data/', views.get_file_list_data),

@@ -1,3 +1,6 @@
+"""
+forms
+"""
 import os
 
 from django import forms
@@ -8,6 +11,18 @@ from .consts import LANG
 from .consts import SUPPORTED_FILE_FORMAT
 
 class DocumentForm(forms.ModelForm):
+    """Document form
+
+    Args:
+        forms ([type]): [description]
+
+    Raises:
+        forms.ValidationError: [description]
+        forms.ValidationError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     class Meta:
         model = File
         fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key', 'ip_address', 'chara_count', 'delete_format_tag')
@@ -24,6 +39,15 @@ class DocumentForm(forms.ModelForm):
         }
 
     def clean_name(self):
+        """
+        clean name
+
+        Raises:
+            forms.ValidationError: [description]
+
+        Returns:
+            [type]: [description]
+        """
         name = self.cleaned_data['name']
         path_split = os.path.splitext(name)
         if path_split[1] not in SUPPORTED_FILE_FORMAT:
@@ -35,6 +59,12 @@ class DocumentForm(forms.ModelForm):
     #     raise forms.ValidationError('source_lang のバリデーションに引っかかりました。')
 
 class TextForm(forms.ModelForm):
+    """
+    Text fomr
+
+    Args:
+        forms ([type]): [description]
+    """
     class Meta:
         model = Text
         fields = ('source_lang', 'target_lang', 'file_session_key', 'ip_address', 'chara_count')

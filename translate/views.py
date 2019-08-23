@@ -1,3 +1,6 @@
+"""
+views
+"""
 import mimetypes
 import os
 import io
@@ -14,9 +17,11 @@ import lib.translator
 from .consts import STATUS
 
 def index(request):
+    """index page"""
     return redirect('translate/translator')
 
 def translate_index(request):
+    """index page"""
     return redirect('translate:translator')
 
 # Create your views here.
@@ -35,7 +40,7 @@ def translator(request):
                    'nbar': "trans"},
                  )
 
-def help(request):
+def help_index(request):
     """help page"""
     return render(request,
                   'translate/help.html',
@@ -60,9 +65,9 @@ def translate_text(request):
     if form.is_valid():
         form.save()
         transed_text = lib.translator.translate_text_by_google(copied_post_data.get('source_text'),
-                                           copied_post_data.get('source_lang'),
-                                           copied_post_data.get('target_lang'),
-                                           pseudo=False)
+                                                               copied_post_data.get('source_lang'),
+                                                               copied_post_data.get('target_lang'),
+                                                               pseudo=False)
         result = {"result": "success", "text": transed_text}
     else:
         message = ""
