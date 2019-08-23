@@ -27,9 +27,9 @@ else: # Productuin
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #set google credential env
-env = environ.Env()
-env_file = os.path.join(BASE_DIR, '.env')
-env.read_env(env_file)
+ENV = environ.Env()
+ENV_FILE = os.path.join(BASE_DIR, '.env')
+ENV.read_env(ENV_FILE)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/

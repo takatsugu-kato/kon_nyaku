@@ -2,8 +2,8 @@
 This modules is related to translator
 """
 import os
-import pytz
 import html
+import pytz
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
@@ -122,7 +122,7 @@ def get_ip_address(request):
         ip_address = request.META.get('REMOTE_ADDR')
     return ip_address
 
-def create_file_list_tbody_html(request, STATUS):
+def create_file_list_tbody_html(request, status_cons):
     """Create file list as html
 
     Args:
@@ -135,36 +135,46 @@ def create_file_list_tbody_html(request, STATUS):
     jst = pytz.timezone('Asia/Tokyo')
 
     files = File.objects.filter(file_session_key=request.session.session_key).filter(delete_flag=False).order_by('id').reverse()
-    html = ""
+    html_string = ""
     done_flag = 1
     for file in files:
         created_date = file.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
-        translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled"><i class="fas fa-language"></i></a>\n'
-        delete_button_html = '<span data-toggle="tooltip" data-placement="top" title="delete"><a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a></span>\n'
+        translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled">'
+                                 '<i class="fas fa-language"></i></a>\n')
+        delete_button_html = ('<span data-toggle="tooltip" data-placement="top" title="delete">'
+                              '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
+                              ' data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+                              '<i class="fas fa-trash-alt"></i></a></span>\n')
 
         #set done flag
         if file.status == 1:
             done_flag = 0
-            delete_button_html = '<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled" data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '"><i class="fas fa-trash-alt"></i></a>\n'
+            delete_button_html = ('<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled"'
+                                  ' data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+                                  '<i class="fas fa-trash-alt"></i></a>\n')
 
         if file.progress == 100:
-            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'\
-                            '<a class="progress_a" href="/translate/file_download/' + str(file.id) + '" download><i class="fas fa-download"></i> Download</a></div></div>'
+            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'
+                             '<a class="progress_a" href="/translate/file_download/' + str(file.id) + '" download>'
+                             '<i class="fas fa-download"></i> Download</a></div></div>')
         elif file.status == 0:
-            progress_html = STATUS[file.status]
-            translate_button_html = '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm" data-toggle="tooltip" data-placement="top" title="translate"><i class="fas fa-language"></i></a>\n'
+            progress_html = status_cons[file.status]
+            translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"'
+                                     ' data-toggle="tooltip" data-placement="top" title="translate"><i class="fas fa-language"></i></a>\n')
         elif file.status > 100:
-            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%">' + STATUS[file.status] + '</div></div>'
+            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-danger"'
+                             ' role="progressbar" style="width: 100%">' + status_cons[file.status] + '</div></div>')
         else:
-            progress_html = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
+            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated"'
+                             ' role="progressbar" style="width: '+str(file.progress)+'%"></div></div>')
 
         if file.delete_format_tag:
             delete_format_tag_html = '<i class="fas fa-eraser"></i>'
         else:
             delete_format_tag_html = ""
-        html = html + '        <tr>\n'\
+        html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
@@ -177,7 +187,7 @@ def create_file_list_tbody_html(request, STATUS):
             '            ' + delete_button_html + \
             '          </td>\n'\
             '        </tr>\n'
-    return_json = {"html": html, "done_flag": done_flag}
+    return_json = {"html": html_string, "done_flag": done_flag}
     return return_json
 
 def set_delete_flag(file_id):
