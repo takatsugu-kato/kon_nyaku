@@ -14,11 +14,24 @@ $(function() {
         console.log("clear")
     });
 
-    //show modal window
+    //show delete modal window
     $('table').on('click', '.del_confirm', function(){
         $("#del_pk").text($(this).data("pk"));
         $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
     });
+
+    //show download modal window
+    $('table').on('click', '.download_confirm', function(){
+        $("#download_pk").text($(this).data("pk"));
+        $("#download_OK").attr('data-pk', ($(this).data("pk")));
+    });
+
+    //download file
+    $('#download_OK').on('click', function (){
+        // window.open("../file_download/" + $(this).data("pk"), '_blank') //no warnings but window is flash...
+        window.location.assign("../file_download/" + $(this).data("pk"));
+    });
+
 
     //focus del button when modal windows is displayed
     $('#deleteModal').on('shown.bs.modal', function () {
@@ -103,6 +116,18 @@ $(function() {
     $('#deleteModal').on('click', '#del_url', function(){
         event.preventDefault();
         $('#deleteModal').modal('hide');
+        var href = $(this).attr('href');
+        $.ajax({
+            url:href,
+        }).done(function(){
+            refreshFileList()
+        });
+    });
+
+    //download file
+    $('#downloadModal').on('click', '#download_url', function(){
+        event.preventDefault();
+        $('#downloadModal').modal('hide');
         var href = $(this).attr('href');
         $.ajax({
             url:href,
