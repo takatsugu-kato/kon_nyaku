@@ -8,6 +8,12 @@ $(function() {
         setTargetTextBoxHeigth();
     });
 
+    $('#source_text').keydown(function(e){
+        if (e.ctrlKey && e.keyCode == 13){
+            translateText()
+        }
+    })
+
     //clear text
     $('#text_clear').click(function(){
         $('textarea').val('');
@@ -27,40 +33,9 @@ $(function() {
 
     //text translation
     $('#translate_text_btn').on('click', function() {
-        event.preventDefault();
-        var csrf_token = getCookie("csrftoken");
-        //set file translator language when language changed
-        $('#text_translator_source_lang').val($('#id_source_lang').val());
-        $('#text_translator_target_lang').val($('#id_target_lang').val());
-        $.ajax({
-            type:'POST',
-            url:"/translate/translate_text/",
-            data: new FormData($("#translate_text").get(0)),
-            processData: false,
-            contentType: false,
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                }
-            },
-        }).done(function(data){
-            if (data.result == "error") {
-                $.notify({
-                    message: data.text,
-                },{
-                    type: "danger",
-                    timer: 1000,
-                    delay: 3000,
-                    placement: {
-                        from: 'top',
-                        align: 'center'
-                    }
-                });
-            }else{
-                $('#target_text').val(data.text)
-            }
-        });
+        translateText()
     });
+
 
     //upload file
     $('#upload').on('click', function() {
@@ -179,6 +154,42 @@ $(function() {
                 setTimeout(function(){
                     refreshFileList();
                 },5000);
+            }
+        });
+    }
+
+    function translateText(){
+        event.preventDefault();
+        var csrf_token = getCookie("csrftoken");
+        //set file translator language when language changed
+        $('#text_translator_source_lang').val($('#id_source_lang').val());
+        $('#text_translator_target_lang').val($('#id_target_lang').val());
+        $.ajax({
+            type:'POST',
+            url:"/translate/translate_text/",
+            data: new FormData($("#translate_text").get(0)),
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            },
+        }).done(function(data){
+            if (data.result == "error") {
+                $.notify({
+                    message: data.text,
+                },{
+                    type: "danger",
+                    timer: 1000,
+                    delay: 3000,
+                    placement: {
+                        from: 'top',
+                        align: 'center'
+                    }
+                });
+            }else{
+                $('#target_text').val(data.text)
             }
         });
     }
