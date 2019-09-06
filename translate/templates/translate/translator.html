@@ -1,4 +1,5 @@
 {% extends "translate/base.html" %}
+{% load i18n static %}
 
 {% block title %}Kon-nyaku{% endblock title %}
 
@@ -8,7 +9,7 @@
     <div class="col-5">Source Language</div>
     <div class="col-5 offset-md-2">Target Language</div>
     {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
-    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language" data-toggle="tooltip" data-placement="top" title="swap languages"><i class='fas fa-exchange-alt'></i></a>
+    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language" data-toggle="tooltip" data-placement="top" title="Swap languages"><i class='fas fa-exchange-alt'></i></a>
     {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
   </div>
   <h2 class="border-bottom mt-2">Text Translator</h2>
@@ -18,14 +19,17 @@
     <input type="hidden" name="target_lang" id="text_translator_target_lang">
     <div class="form-row">
       <div class="col-5">
-        <i class="fas fa-times" id="text_clear" data-toggle="tooltip" data-placement="top" title="clear text"></i>
+        <i class="fas fa-times" id="text_clear" data-toggle="tooltip" data-placement="top" title="Clear text"></i>
         <textarea class="form-control" rows="10" id="source_text" name="source_text"></textarea>
       </div>
       <div class="col-2">
-        {% bootstrap_button "<i class='fas fa-language'></i> Translate" id="translate_text_btn" button_type="submit" button_class="w-100 btn-primary" %}
+        {% bootstrap_button "<i class='fas fa-language'></i> Translate with Google" id="translate_text_btn" button_type="submit" button_class="w-100 btn-primary" %}
       </div>
       <div class="col-5">
         <textarea class="form-control" rows="10" id="target_text" readonly></textarea>
+      </div>
+      <div class="col-5 offset-md-7">
+        <img src="{% static 'translate/images/color-regular.png' %}">
       </div>
     </div>
   </form>
@@ -77,11 +81,31 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="modal-body">
-          <p>ID: Are you sure you want to delete <span id="del_pk"></span>?</p>
+          <p>Are you sure you want to delete ID: <span id="del_pk"></span>?</p>
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-primary" id="del_url">OK</a>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# Modal dialog to warning download #}
+  <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="downloadModalLabel">Warning</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p>ダウンロードしたファイルは、個人または翻訳者の参照用のみに使用すること。</p>
+          <p><span class="text-danger">クライアントへの納品物として使用する場合は、必ず編集部を介すこと。</span></p>
+        </div>
+        <div class="modal-footer">
+          <!-- <a href="#" class="btn btn-primary" id="download_url" download>OK</a> -->
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="download_OK">Agree</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Disagree</button>
         </div>
       </div>
     </div>

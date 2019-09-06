@@ -26,12 +26,20 @@
           </div>
         </div>
       </nav>
-  <div class="container">
+  <div class="container wrapper">
     {% block content %}
       {{ content }}
     {% endblock %}
   </div>
-<script src="{% static 'translate/js/jquery-3.3.1.min.js' %}"></script>
+
+  <footer class="footer">
+    <div class="container">
+      <img src="{% static 'translate/images/color-regular.png' %}">
+      <p class="text-muted">THIS SERVICE MAY CONTAIN TRANSLATIONS POWERED BY GOOGLE. GOOGLE DISCLAIMS ALL WARRANTIES RELATED TO THE TRANSLATIONS, EXPRESS OR IMPLIED, INCLUDING ANY WARRANTIES OF ACCURACY, RELIABILITY, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</p>
+    </img>
+  </footer>
+
+  <script src="{% static 'translate/js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'translate/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'translate/js/bootstrap-notify.min.js' %}"></script>
 <script src="{% static 'translate/js/autosize.min.js' %}"></script>
