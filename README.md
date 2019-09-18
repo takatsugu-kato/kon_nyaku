@@ -80,6 +80,8 @@ python manage.py migrate
 ```
 
 ## Tips for production
+### Deploy to Production
+See this [site](https://qiita.com/tinaba/items/01bc72c100f97438a36e)
 ### Change static files (js and css)
 If static files are changes, you should run the following command.
 ```
@@ -90,3 +92,11 @@ If model is changes, you should run the following command.
 ```
 python3 manage.py migrate
 ```
+### UnicodeEncodeError ‘ascii’ codec can’t encode characters in position ordinal not in range(128)
+Change `/etc/sysconfig/httpd` file to above
+```
+LANG='ja_JP.UTF-8'
+LC_ALL='ja_JP.UTF-8'
+```
+For more information, see this [site](https://itekblog.com/ascii-codec-cant-encode-characters-in-position/)
+
