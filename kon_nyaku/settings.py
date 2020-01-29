@@ -147,3 +147,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR)
 MEDIA_URL = '/media/'
 
 SESSION_SAVE_EVERY_REQUEST = True # 1リクエストごとにセッション情報を更新
+
+FILE_UPLOAD_PERMISSIONS = 0o644
