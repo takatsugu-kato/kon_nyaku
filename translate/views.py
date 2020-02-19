@@ -62,11 +62,13 @@ def translate_text(request):
 
     form = TextForm(copied_post_data, initial=default_form_value)
 
+    jotai = bool(copied_post_data.get('jotai') == "true")
     if form.is_valid():
         form.save()
         transed_text = lib.translator.translate_text_by_google(copied_post_data.get('source_text'),
                                                                copied_post_data.get('source_lang'),
                                                                copied_post_data.get('target_lang'),
+                                                               jotai,
                                                                pseudo=False)
         result = {"result": "success", "text": transed_text}
     else:
@@ -89,6 +91,8 @@ def upload_file(request):
         #get ipaddress
         copied_post_data['ip_address'] = lib.translator.get_ip_address(request)
 
+        jotai = bool(copied_post_data.get('jotai') == "true")
+        copied_post_data['change_to_jotai'] = jotai
         form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
 
         if form.is_valid():

@@ -7,6 +7,7 @@ import string as string_module
 import random
 from lxml import etree
 from google.cloud import translate
+from MasuDa import Converter
 
 class Xlf():
     """
@@ -69,7 +70,7 @@ class Xlf():
         self.trans_unit_count = trans_unit_count
         return files
 
-    def translate(self, model="nmt", delete_format_tag=False, pseudo=False, django_file_obj=""):
+    def translate(self, model="nmt", delete_format_tag=False, change_to_jotai=False, pseudo=False, django_file_obj=""):
         """
         Transalte the file object
 
@@ -80,6 +81,8 @@ class Xlf():
                                    Flag of to delete the format tag when translate.
             delete_format_tag (bool, optional): Defaults to False.
                                                If you want to delete inline format tag, set to True.
+            change_to_jotai (bool, optional): Defaults to False.
+                                               If you want to change keitai to jotai for Japanese, set to True.
             pseudo (bool, optional): Defaults to False.
                                      If you want to pseudo translate, set to True.
                                      For example, you don't to want to send to Google.
@@ -113,6 +116,9 @@ class Xlf():
                         source_language=self.source_language,
                         target_language=self.target_language)
                     translated_text = translation['translatedText']
+                    if change_to_jotai:
+                        masuda = Converter()
+                        translated_text = masuda.keitai2jotai(translated_text)
                     translated_text = xlfstring.change_i_tag_to_xlf_inline_tag(translated_text)
                     segment.string = xlfstring.revert_placeholder(translated_text)
 

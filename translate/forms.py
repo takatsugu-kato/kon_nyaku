@@ -25,7 +25,7 @@ class DocumentForm(forms.ModelForm):
     """
     class Meta:
         model = File
-        fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key', 'ip_address', 'chara_count', 'delete_format_tag')
+        fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key', 'ip_address', 'chara_count', 'delete_format_tag', 'change_to_jotai')
 
         SOURCE_LANG = LANG
         TARGET_LANG = LANG

@@ -12,6 +12,7 @@ class File(models.Model):
     delete_format_tag = models.BooleanField("Delete Format Tags", default=False)
     source_lang = models.CharField('Source Language', max_length=8, default='')
     target_lang = models.CharField('Target Language', max_length=8, default='')
+    change_to_jotai = models.BooleanField('Change to Jotai', default=False)
     progress = models.IntegerField('Progress', blank=True, default=0)
     created_date = models.DateTimeField('Created', auto_now_add=True)
     modified_date = models.DateTimeField('Modified', auto_now=True)

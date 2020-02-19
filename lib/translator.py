@@ -13,14 +13,16 @@ from translate.models import File
 from lib.okapi import Okapi
 from lib.xlf import Xlf
 from .xlf import PseudoClient
+from MasuDa import Converter
 
-def translate_text_by_google(string, source_language, target_language, model="nmt", pseudo=False):
+def translate_text_by_google(string, source_language, target_language, jotai=False, model="nmt", pseudo=False):
     """Translate using google translate
 
     Args:
         string (str): to transalte string
         source_language (str): source language code
         target_language (str): target language code
+        jotai (bool, optional): Change to jotai for japanese text
         model (str, optional): language model. Defaults to "nmt".
         pseudo (bool, optional): pseudo flag. Defaults to False.
 
@@ -37,6 +39,9 @@ def translate_text_by_google(string, source_language, target_language, model="nm
         source_language=source_language,
         target_language=target_language)
     translated_text = translation['translatedText']
+    if jotai:
+        masuda = Converter()
+        translated_text = masuda.keitai2jotai(translated_text)
     return br2lf(html.unescape(translated_text))
 
 def lf2br(string):
@@ -89,7 +94,7 @@ def translate_file(file_id):
         return
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, pseudo=False, django_file_obj=file)
+    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
 
     res = xlf_obj.back_to_xlf()
     if not res:

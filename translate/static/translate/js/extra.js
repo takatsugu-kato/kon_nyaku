@@ -57,6 +57,7 @@ $(function() {
         //set file translator language when language changed
         $('#file_translator_source_lang').val($('#id_source_lang').val());
         $('#file_translator_target_lang').val($('#id_target_lang').val());
+        $('#file_translator_jotai').val($('#jotai').prop('checked'));
         $.ajax({
             type:'POST',
             url:"/translate/upload_file/",
@@ -144,6 +145,7 @@ $(function() {
         source_text = $('#source_text').val();
         $('#source_text').val($('#target_text').val());
         $('#target_text').val(source_text);
+        disableJotaiCheckbox()
     });
 
     //swap language when select same language
@@ -153,6 +155,7 @@ $(function() {
         source_lang = $('#id_source_lang').val();
         if (source_lang === $('#id_target_lang').val()){
             $('#id_target_lang').val(previous);
+            disableJotaiCheckbox()
         }
         previous = this.value;
     });
@@ -162,9 +165,25 @@ $(function() {
         target_lang = $('#id_target_lang').val();
         if (target_lang === $('#id_source_lang').val()){
             $('#id_source_lang').val(previous);
+            disableJotaiCheckbox()
         }
         previous = this.value;
     });
+
+    $("#id_target_lang").change(function() {
+        disableJotaiCheckbox()
+    });
+
+    //only enable jotai checkbox if selected target is Japanese
+    function disableJotaiCheckbox(){
+        target_lang = $('#id_target_lang').val();
+        if (target_lang === "ja"){
+            $('#jotai').prop({'disabled':false})
+        }else{
+            $('#jotai').prop({'disabled':true})
+            $('#jotai').prop('checked', false)
+        }
+    }
 
     //reflesh file list
     function refreshFileList(){
@@ -189,6 +208,7 @@ $(function() {
         //set file translator language when language changed
         $('#text_translator_source_lang').val($('#id_source_lang').val());
         $('#text_translator_target_lang').val($('#id_target_lang').val());
+        $('#text_translator_jotai').val($('#jotai').prop('checked'));
         $.ajax({
             type:'POST',
             url:"/translate/translate_text/",
