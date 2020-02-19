@@ -12,6 +12,7 @@ File translator used Google Translator API
     - `pip install environ`
     - `pip install django-crontab`
     - `pip install python-dateutil`
+    - `pip install 'git+https://github.com/takatsugu-kato/MasuDa.git'`
 - Okapi
   - Java 1.8
 - supervisor
