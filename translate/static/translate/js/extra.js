@@ -193,7 +193,6 @@ $(function() {
             dataType:'json',
         }).done(function(data){
             $(document.querySelector('body > div > table > tbody')).html(data.html);
-            $('[data-toggle="tooltip"]').tooltip()
             if (data.done_flag === 0){
                 setTimeout(function(){
                     refreshFileList();
