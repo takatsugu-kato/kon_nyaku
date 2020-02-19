@@ -181,10 +181,14 @@ def create_file_list_tbody_html(request, status_cons):
         else:
             delete_format_tag_html = ""
 
-        if file.change_to_jotai:
-            style = "である調"
+        if file.target_lang == "ja":
+            if file.change_to_jotai:
+                style = "である調"
+            else:
+                style = "ですます調"
         else:
-            style = "ですます調"
+            style = "N/A"
+
 
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
