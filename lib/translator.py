@@ -180,12 +180,19 @@ def create_file_list_tbody_html(request, status_cons):
             delete_format_tag_html = '<i class="fas fa-eraser"></i>'
         else:
             delete_format_tag_html = ""
+
+        if file.change_to_jotai:
+            style = "である調"
+        else:
+            style = "ですます調"
+
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
             '          <td>' + file.target_lang + '</td>\n'\
             '          <td class="text-center">' + delete_format_tag_html + '</td>\n'\
+            '          <td>' + style + '</td>\n'\
             '          <td>' + progress_html + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
             '          <td class="text-center">\n'\
