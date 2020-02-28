@@ -93,6 +93,12 @@ If model is changes, you should run the following command.
 ```
 python3 manage.py migrate
 ```
+
+### Change file translate
+```
+sudo service supervisord restart
+```
+
 ### UnicodeEncodeError ‘ascii’ codec can’t encode characters in position ordinal not in range(128)
 Change `/etc/sysconfig/httpd` file to above
 ```
