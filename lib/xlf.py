@@ -321,9 +321,8 @@ class XlfString():
     def __init__(self, string):
         self.string = string
         self.inline_tag_list = ["g"]
-        self.exist_ex_tag = False
-        self.exist_bx_tag = False
-        self.paired_placeholder_id = 0
+        self.ex_tag_ids = list()
+        self.bx_tag_ids = list()
         self.__void_paired_placeholder()
         self.__replace_placeholder_to_notran_tag()
         ##TODO:セグメントの最初にgタグがあったかを保持しておいて、
@@ -379,12 +378,11 @@ class XlfString():
         repatter = re.compile(r'<(ex|bx) id="([0-9]+)"/>')
         match = repatter.search(self.string)
         while match:
-            self.paired_placeholder_id = match.group(2)
             self.string = repatter.sub("", self.string, 1)
             if match.group(1) == "ex":
-                self.exist_ex_tag = True
+                self.ex_tag_ids.append(match.group(2))
             elif match.group(1) == "bx":
-                self.exist_bx_tag = True
+                self.bx_tag_ids.append(match.group(2))
             match = repatter.search(self.string)
 
     def __replace_placeholder_to_notran_tag(self):
@@ -407,8 +405,8 @@ class XlfString():
         """
         repatter = re.compile(r'<span translate="no" id="([0-9]+)">X</span>')
         text = repatter.sub('<x id="\\1"/>', text)
-        if self.exist_bx_tag:
-            text = '<bx id ="{0}"/>'.format(self.paired_placeholder_id) + text
-        if self.exist_ex_tag:
-            text = text + '<ex id ="{0}"/>'.format(self.paired_placeholder_id)
+        for bx_tag_id in reversed(self.bx_tag_ids):
+            text = '<bx id ="{0}"/>'.format(bx_tag_id) + text
+        for ex_tag_id in self.ex_tag_ids:
+            text = text + '<ex id ="{0}"/>'.format(ex_tag_id)
         return text
