@@ -180,12 +180,15 @@ class Xlf():
             seg_obj.string = self.__convert_element_to_string(element)
             return seg_obj
         else:
-            mrks = []
-            for mrk_element in element.findall('xliff:mrk', self.namespace):
-                mrk_seg_obj = Segment(mrk_element.get('mid'))
-                mrk_seg_obj.string = self.__convert_element_to_string(mrk_element)
-                mrks.append(mrk_seg_obj)
-            return mrks
+            try:
+                mrks = []
+                for mrk_element in element.findall('xliff:mrk', self.namespace):
+                    mrk_seg_obj = Segment(mrk_element.get('mid'))
+                    mrk_seg_obj.string = self.__convert_element_to_string(mrk_element)
+                    mrks.append(mrk_seg_obj)
+                return mrks
+            except AttributeError:
+                return None
 
     def __convert_element_to_string(self, element):
         """
