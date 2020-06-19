@@ -48,23 +48,6 @@ def insert_lang_code_with_1st_line(csv_path, temp_csv_path, source_lang_code, ta
             for line in reader:
                 writer.writerow([line[0], line[1]])
 
-def upload_blob(csv_path):
-    """Uploads a file to the bucket."""
-    bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
-    destination_blob_name = os.path.basename(csv_path)
-
-    try:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(destination_blob_name)
-
-        blob.upload_from_filename(csv_path)
-
-        response = True
-    except Exception as e:
-        response = False
-    return response
-
 def create_glossary_list_tbody_html(request, status_cons):
     """Create glossary list as html
 
