@@ -89,6 +89,7 @@ def create_glossary_on_google():
             print('Created: {}'.format(result.name))
             print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
             glossary.terms = result.entry_count
+            glossary.glossary_id = glossary_id
             glossary.status = 302
         except AlreadyExists:
             glossary.status = 302
@@ -119,10 +120,12 @@ def create_glossary_list_tbody_html(request, status_cons):
                               ' data-target="#deleteModal" data-pk="' + str(glossary.id) + '">'
                               '<i class="fas fa-trash-alt"></i></a></span>\n')
 
+        download_html = '<a href="/media/{0}">{1}</a>'.format(glossary.document, glossary.name)
 
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(glossary.id) + '</th>\n'\
-            '          <td>' + glossary.name + '</td>\n'\
+            '          <td>' + download_html + '</td>\n'\
+            '          <td>' + glossary.glossary_id + '</td>\n'\
             '          <td>' + glossary.source_lang + '</td>\n'\
             '          <td>' + glossary.target_lang + '</td>\n'\
             '          <td>' + status_cons[glossary.status] + '</td>\n'\
