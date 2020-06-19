@@ -6,6 +6,7 @@ import os
 from django import forms
 from translate.models import File
 from translate.models import Text
+from translate.models import Glossary
 
 from .consts import LANG
 from .consts import SUPPORTED_FILE_FORMAT
@@ -73,6 +74,33 @@ class TextForm(forms.ModelForm):
         TARGET_LANG = LANG
 
         widgets = {
+            'source_lang': forms.Select(choices=SOURCE_LANG),
+            'target_lang': forms.Select(choices=TARGET_LANG),
+        }
+
+class GlossaryForm(forms.ModelForm):
+    """Glossary form
+
+    Args:
+        forms ([type]): [description]
+
+    Raises:
+        forms.ValidationError: [description]
+        forms.ValidationError: [description]
+
+    Returns:
+        [type]: [description]
+    """
+    class Meta:
+        model = Glossary
+        fields = ('name', 'source_lang', 'target_lang', 'document', 'status')
+
+        SOURCE_LANG = LANG
+        TARGET_LANG = LANG
+
+        widgets = {
+            'name': forms.HiddenInput(attrs={'id': "id_name"}),
+            'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.csv'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
         }

@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 
+from translate.forms import GlossaryForm
 from translate.forms import DocumentForm
 from translate.forms import TextForm
 from translate.models import File
@@ -24,10 +25,27 @@ def translate_index(request):
     """index page"""
     return redirect('translate:translator')
 
+def glossary(request):
+    """glossary views"""
+    default_form_value = {'target_lang':'ja'}
+
+    form = GlossaryForm(initial=default_form_value)
+
+    tbody_html = lib.translator.create_glossary_list_tbody_html(request, STATUS)
+
+    return render(request,
+                  'translate/glossary.html',
+                  {'file_list_data': tbody_html,
+                   'form': form,
+                   'STATUS': STATUS,
+                   'nbar': "glossary"},
+                 )
+
 # Create your views here.
 def translator(request):
     """get list of files"""
     default_form_value = {'target_lang':'ja'}
+
     form = DocumentForm(initial=default_form_value)
 
     tbody_html = lib.translator.create_file_list_tbody_html(request, STATUS)
@@ -78,6 +96,26 @@ def translate_text(request):
         result = {"result": "error", "text": message}
     return JsonResponse(result)
 
+def upload_glossary(request):
+    """upload glossary"""
+
+    #Set the session key to POST
+    copied_post_data = request.POST.copy()
+    copied_post_data['status'] = 300
+    if request.FILES:
+        form = GlossaryForm(copied_post_data, request.FILES)
+        if form.is_valid():
+            form.save()
+            result = {"type": "success", "message": ["Uploaded"]}
+        else:
+            message = ""
+            for error in form.errors:
+                message = message + form.errors[error]
+            result = {"type": "danger", "message": message}
+        return JsonResponse(result)#この段階でmessageがstrからarrayになる　なぜ？
+    else:
+        return JsonResponse({"type": "danger", "message": ["File is not selected"]})
+
 def upload_file(request):
     """upload file"""
     default_form_value = {'target_lang':'ja'}
@@ -125,6 +163,11 @@ def file_del(request, file_id):
 def get_file_list_data(request):
     """get file list"""
     tbody_html = lib.translator.create_file_list_tbody_html(request, STATUS)
+    return JsonResponse(tbody_html)
+
+def get_glossary_list_data(request):
+    """get glossary list"""
+    tbody_html = lib.translator.create_glossary_list_tbody_html(request, STATUS)
     return JsonResponse(tbody_html)
 
 

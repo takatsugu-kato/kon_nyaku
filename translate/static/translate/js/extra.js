@@ -1,6 +1,7 @@
 $(function() {
 
     refreshFileList()
+    refreshGlossaryList()
     // auto size the textarea
     // reference: https://www.webantena.net/javascriptjquery/plugin-jquery-autosize/
     autosize(document.querySelectorAll('textarea'));
@@ -49,6 +50,39 @@ $(function() {
         translateText()
     });
 
+    //upload glossary
+    $('#upload_glossary').on('click', function() {
+        event.preventDefault();
+        var csrf_token = getCookie("csrftoken");
+        $.ajax({
+            type:'POST',
+            url:"/translate/upload_glossary/",
+            data: new FormData($("#glossary_upload").get(0)),
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    $('#id_document').val(null)
+                    $('#id_name').val(null)
+                    $('#display_file_name').val(null)
+                }
+            },
+        }).done(function(data){
+            $.notify({
+                message: data.message.join("<br/>"),
+            },{
+                type: data.type,
+                timer: 1000,
+                delay: 3000,
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                }
+            });
+            refreshGlossaryList()
+        });
+    });
 
     //upload file
     $('#upload').on('click', function() {
@@ -190,6 +224,22 @@ $(function() {
         var html;
         $.ajax({
             url:'/translate/get_file_list_data/',
+            dataType:'json',
+        }).done(function(data){
+            $(document.querySelector('body > div > table > tbody')).html(data.html);
+            if (data.done_flag === 0){
+                setTimeout(function(){
+                    refreshFileList();
+                },5000);
+            }
+        });
+    }
+
+    //reflesh glossary list
+    function refreshGlossaryList(){
+        var html;
+        $.ajax({
+            url:'/translate/get_glossary_list_data/',
             dataType:'json',
         }).done(function(data){
             $(document.querySelector('body > div > table > tbody')).html(data.html);
