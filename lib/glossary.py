@@ -88,6 +88,7 @@ def create_glossary_on_google():
             result = operation.result(timeout=90)
             print('Created: {}'.format(result.name))
             print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
+            glossary.terms = result.entry_count
             glossary.status = 302
         except AlreadyExists:
             glossary.status = 302
@@ -125,6 +126,7 @@ def create_glossary_list_tbody_html(request, status_cons):
             '          <td>' + glossary.source_lang + '</td>\n'\
             '          <td>' + glossary.target_lang + '</td>\n'\
             '          <td>' + status_cons[glossary.status] + '</td>\n'\
+            '          <td>' + str(glossary.terms) + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
             '          <td class="text-center">' + delete_button_html + '</td>\n'\
             '        </tr>\n'
