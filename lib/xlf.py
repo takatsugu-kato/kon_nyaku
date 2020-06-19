@@ -2,6 +2,7 @@
 This modules is to handle xlf file
 """
 
+import os
 import re
 import string as string_module
 import random
@@ -70,7 +71,7 @@ class Xlf():
         self.trans_unit_count = trans_unit_count
         return files
 
-    def translate(self, model="nmt", delete_format_tag=False, change_to_jotai=False, pseudo=False, django_file_obj=""):
+    def translate(self, delete_format_tag=False, change_to_jotai=False, pseudo=False, django_file_obj=""):
         """
         Transalte the file object
 
@@ -92,7 +93,13 @@ class Xlf():
         if pseudo:
             translate_client = PseudoClient()
         else:
-            translate_client = translate.Client()
+            translate_client = translate.TranslationServiceClient()
+
+
+        parent = translate_client.location_path(
+            os.getenv("GOOGLE_PROJECT_ID"),
+            os.getenv("GOOGLE_LOCATION")
+        )
 
         unit_count = 0
         for file in self.files:
@@ -110,12 +117,13 @@ class Xlf():
                     else:
                         xlfstring.change_xlf_inline_tag_to_i_tag()
                     self.charactor_count = self.charactor_count + len(xlfstring.string)
-                    translation = translate_client.translate(
-                        xlfstring.string,
-                        model=model,
-                        source_language=self.source_language,
-                        target_language=self.target_language)
-                    translated_text = translation['translatedText']
+                    translation = translate_client.translate_text(
+                        contents=[xlfstring.string],
+                        parent=parent,
+                        mime_type='text/html',
+                        source_language_code=self.source_language,
+                        target_language_code=self.target_language)
+                    translated_text = translation.translations[0].translated_text
                     if change_to_jotai:
                         masuda = Converter()
                         translated_text = masuda.keitai2jotai(translated_text)
@@ -230,9 +238,12 @@ class PseudoClient():
         self.target_language = target_language
 
     @staticmethod
-    def translate(values, target_language=None,
-                  source_language=None,
-                  model=None):
+    def location_path(project_id, location):
+        pass
+
+    @staticmethod
+    def translate_text(contents, parent=None, mime_type=None, target_language_code=None,
+                  source_language_code=None):
         """
         Translate pseudo.
 
@@ -248,7 +259,7 @@ class PseudoClient():
         punctuation = ['.', ':', ';', ',', '!', '?']
 
         #Firstry, split by tags
-        tag_splitted_list = re.split('(<span translate="no" id="[0-9]+?">.*?</span>|<.*?>)', values)
+        tag_splitted_list = re.split('(<span translate="no" id="[0-9]+?">.*?</span>|<.*?>)', contents[0])
         words = []
 
         #Secondry, split by space
@@ -277,9 +288,18 @@ class PseudoClient():
                 words[i] = ''.join(random.choices(string_module.ascii_lowercase, k=length))
                 words[i] = pseudo_first_chara + words[i] + last_chara
 
-        translations = dict()
-        translations['translatedText'] = "".join(words)
-        return translations
+        translation = "".join(words)
+        response = PseudoTranslateTextResponse()
+        response.translations = [PseudoResponsedCompositeContainer(translation)]
+        return response
+
+class PseudoTranslateTextResponse():
+    def __init__(self):
+        self.translations = list()
+
+class PseudoResponsedCompositeContainer():
+    def __init__(self, text):
+        self.translated_text = text
 
 class File():
     """

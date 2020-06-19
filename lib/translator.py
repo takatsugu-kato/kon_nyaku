@@ -16,7 +16,7 @@ from lib.xlf import Xlf
 from .xlf import PseudoClient
 from MasuDa import Converter
 
-def translate_text_by_google(string, source_language, target_language, jotai=False, model="nmt", pseudo=False):
+def translate_text_by_google(string, source_language, target_language, jotai=False, pseudo=False):
     """Translate using google translate
 
     Args:
@@ -33,13 +33,21 @@ def translate_text_by_google(string, source_language, target_language, jotai=Fal
     if pseudo:
         translate_client = PseudoClient()
     else:
-        translate_client = translate.Client()
-    translation = translate_client.translate(
-        lf2br(string),
-        model=model,
-        source_language=source_language,
-        target_language=target_language)
-    translated_text = translation['translatedText']
+        translate_client = translate.TranslationServiceClient()
+
+    parent = translate_client.location_path(
+        os.getenv("GOOGLE_PROJECT_ID"),
+        os.getenv("GOOGLE_LOCATION")
+    )
+
+    translation = translate_client.translate_text(
+        contents=[lf2br(string)],
+        parent=parent,
+        mime_type='text/html',
+        source_language_code=source_language,
+        target_language_code=target_language)
+    print(translation)
+    translated_text = translation.translations[0].translated_text
     if jotai:
         masuda = Converter()
         translated_text = masuda.keitai2jotai(translated_text)
@@ -84,7 +92,6 @@ def translate_file(file_id):
 
     source_lang = file.source_lang
     target_lang = file.target_lang
-    translation_model = "nmt"
     # to_trans_file = "./sample_file/test.docx"
 
     okapi_obj = Okapi(source_lang, target_lang)
@@ -95,7 +102,7 @@ def translate_file(file_id):
         return
 
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
+    xlf_obj.translate(delete_format_tag=file.delete_format_tag, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
 
     res = xlf_obj.back_to_xlf()
     if not res:
