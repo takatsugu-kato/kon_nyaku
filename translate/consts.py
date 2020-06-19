@@ -123,6 +123,8 @@ STATUS = {
     201: 'back_to_xlf error',
     #Glossary Status
     300: 'Uploaded',
-    301: 'Created',
-    302: 'Error',
+    301: 'Uploaded to Google',
+    302: 'Created',
+    303: 'Upload Error',
+    304: 'Create Error',
 }

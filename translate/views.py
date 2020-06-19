@@ -15,6 +15,7 @@ from translate.forms import DocumentForm
 from translate.forms import TextForm
 from translate.models import File
 import lib.translator
+import lib.glossary
 from .consts import STATUS
 
 def index(request):
@@ -27,11 +28,12 @@ def translate_index(request):
 
 def glossary(request):
     """glossary views"""
+    lib.glossary.upload_glossary_on_google()
     default_form_value = {'target_lang':'ja'}
 
     form = GlossaryForm(initial=default_form_value)
 
-    tbody_html = lib.translator.create_glossary_list_tbody_html(request, STATUS)
+    tbody_html = lib.glossary.create_glossary_list_tbody_html(request, STATUS)
 
     return render(request,
                   'translate/glossary.html',
@@ -81,6 +83,7 @@ def translate_text(request):
     form = TextForm(copied_post_data, initial=default_form_value)
 
     jotai = bool(copied_post_data.get('jotai') == "true")
+
     if form.is_valid():
         form.save()
         transed_text = lib.translator.translate_text_by_google(copied_post_data.get('source_text'),
@@ -167,7 +170,7 @@ def get_file_list_data(request):
 
 def get_glossary_list_data(request):
     """get glossary list"""
-    tbody_html = lib.translator.create_glossary_list_tbody_html(request, STATUS)
+    tbody_html = lib.glossary.create_glossary_list_tbody_html(request, STATUS)
     return JsonResponse(tbody_html)
 
 
