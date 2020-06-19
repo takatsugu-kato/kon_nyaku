@@ -10,6 +10,7 @@ from background_task import background
 from translate.models import Glossary
 from google.cloud import storage
 from google.cloud import translate
+from google.api_core.exceptions import AlreadyExists
 
 def upload_glossary_on_google():
     bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
@@ -47,6 +48,52 @@ def insert_lang_code_with_1st_line(csv_path, temp_csv_path, source_lang_code, ta
             writer.writerow([source_lang_code, target_lang_code])
             for line in reader:
                 writer.writerow([line[0], line[1]])
+
+def create_glossary_on_google():
+    project_id = os.getenv('GOOGLE_PROJECT_ID')
+    bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
+    location = os.getenv('GOOGLE_LOCATION')  # The location of the glossary
+
+    glossaries = Glossary.objects.filter(status=301)
+    for glossary in glossaries:
+        csv_basename = os.path.basename(str(glossary.document))
+        glossary_id = os.path.splitext(csv_basename)[0]
+        print("Creating {0}".format(glossary_id))
+
+        try:
+            client = translate.TranslationServiceClient()
+            name = client.glossary_path(
+                project_id,
+                location,
+                glossary_id)
+
+            language_codes_set = translate.types.Glossary.LanguageCodesSet(
+                language_codes=[glossary.source_lang, glossary.target_lang])
+
+            gcs_source = translate.types.GcsSource(
+                input_uri='gs://{0}/{1}'.format(bucket_name, csv_basename))
+
+            input_config = translate.types.GlossaryInputConfig(
+                gcs_source=gcs_source)
+
+            gcp_glossary = translate.types.Glossary(
+                name=name,
+                language_codes_set=language_codes_set,
+                input_config=input_config)
+
+            parent = client.location_path(project_id, location)
+
+            operation = client.create_glossary(parent=parent, glossary=gcp_glossary)
+
+            result = operation.result(timeout=90)
+            print('Created: {}'.format(result.name))
+            print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
+            glossary.status = 302
+        except AlreadyExists:
+            glossary.status = 302
+        except Exception as e:
+            glossary.status = 304
+        glossary.save()
 
 def create_glossary_list_tbody_html(request, status_cons):
     """Create glossary list as html

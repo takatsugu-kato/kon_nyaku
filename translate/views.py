@@ -28,7 +28,7 @@ def translate_index(request):
 
 def glossary(request):
     """glossary views"""
-    lib.glossary.upload_glossary_on_google()
+    lib.glossary.create_glossary_on_google()
     default_form_value = {'target_lang':'ja'}
 
     form = GlossaryForm(initial=default_form_value)
