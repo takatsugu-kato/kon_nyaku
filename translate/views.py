@@ -53,9 +53,12 @@ def translator(request):
 
     tbody_html = lib.translator.create_file_list_tbody_html(request, STATUS)
 
+    glossry_tbody_html = lib.glossary.create_glossary_for_trans_tbody_html(request)
+
     return render(request,
                   'translate/translator.html',
                   {'file_list_data': tbody_html,
+                   'glossary_list_data': glossry_tbody_html,
                    'form': form,
                    'STATUS': STATUS,
                    'nbar': "trans"},

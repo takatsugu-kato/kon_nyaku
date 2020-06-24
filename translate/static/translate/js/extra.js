@@ -1,3 +1,11 @@
+// //select all checkbox
+// $(document).on('change','[id*=id_glossary_id]',function() {
+//     $('#text_glossary').val($('#id_glossary_id').val());
+//     $('#file_glossary').val($('#id_glossary_id').val());
+// })
+
+
+
 $(function() {
 
 
@@ -59,6 +67,7 @@ $(function() {
             //set file translator language when language changed
             $('#file_translator_source_lang').val($('#id_source_lang').val());
             $('#file_translator_target_lang').val($('#id_target_lang').val());
+            $('#file_glossary').val($('#id_glossary_id').val());
             $('#file_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
@@ -179,6 +188,7 @@ $(function() {
             //set file translator language when language changed
             $('#text_translator_source_lang').val($('#id_source_lang').val());
             $('#text_translator_target_lang').val($('#id_target_lang').val());
+            $('#text_glossary').val($('#id_glossary_id').val());
             $('#text_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
@@ -269,7 +279,7 @@ $(function() {
             url:'/translate/get_file_list_data/',
             dataType:'json',
         }).done(function(data){
-            $(document.querySelector('body > div > table > tbody')).html(data.html);
+            $(document.querySelector('body > div > table[1] > tbody')).html(data.html);
             if (data.done_flag === 0){
                 setTimeout(function(){
                     refreshFileList();
