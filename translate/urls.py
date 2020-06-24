@@ -15,6 +15,7 @@ urlpatterns = [
     path('translator/del/<int:file_id>/', views.file_del, name='file_del'),   # Delete
     path('get_file_list_data/', views.get_file_list_data),
     path('get_glossary_list_data/', views.get_glossary_list_data),
+    path('glossary/del/<int:glossary_id>/', views.glossary_del, name='glossary_del'),
     path('upload_file/', views.upload_file),
     path('upload_glossary/', views.upload_glossary),
     path('translate_text/', views.translate_text),

@@ -7,7 +7,6 @@ class Glossary(models.Model):
     """Glossary"""
     name = models.CharField('File name', max_length=255)
     status = models.IntegerField('Status', blank=True, default=0)
-    glossary_id = models.CharField('Glossary ID', blank=True, max_length=255, default='')
     terms = models.IntegerField('Terms', blank=True, default=0)
     source_lang = models.CharField('Source Language', max_length=8, default='')
     target_lang = models.CharField('Target Language', max_length=8, default='')

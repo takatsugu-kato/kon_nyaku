@@ -28,6 +28,7 @@ def translate_index(request):
 
 def glossary(request):
     """glossary views"""
+    lib.glossary.upload_glossary_on_google()
     lib.glossary.create_glossary_on_google()
     default_form_value = {'target_lang':'ja'}
 
@@ -156,6 +157,16 @@ def file_tra(request, file_id):
     lib.translator.translate_file(file_id)
     return HttpResponse()
 
+def glossary_del(request, glossary_id):
+    """delete glossary"""
+    result = lib.glossary.delete_glossary_fron_google(glossary_id)
+    if result:
+        blob_name = lib.glossary.delete_glossary_file(glossary_id)
+        lib.glossary.delete_glossary_file_from_google(blob_name)
+    else:
+        lib.glossary.set_glossary_status(glossary_id, 305)
+
+    return HttpResponse()
 
 def file_del(request, file_id):
     """delete file"""

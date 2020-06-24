@@ -40,6 +40,51 @@ def upload_glossary_on_google():
         os.remove(temp_csv_path)
         glossary.save()
 
+def delete_glossary_fron_google(glossary_id):
+    project_id = os.getenv('GOOGLE_PROJECT_ID')
+    location = os.getenv('GOOGLE_LOCATION')
+
+    client = translate.TranslationServiceClient()
+
+    glossary_id = 'kon-nyaku_' + str(glossary_id)
+
+    parent = client.glossary_path(
+        project_id,
+        location,
+        glossary_id)
+
+    try:
+        operation = client.delete_glossary(parent)
+        result = operation.result(timeout=90)
+        print('Deleted: {}'.format(result.name))
+        return True
+    except Exception as e:
+        return False
+
+def delete_glossary_file_from_google(blob_name):
+    """Deletes a blob from the bucket."""
+
+    bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.delete()
+
+    print("Blob {} deleted.".format(blob_name))
+
+def set_glossary_status(glossary_id, status):
+    glossary = Glossary.objects.get(pk=glossary_id)
+    glossary.status = status
+    glossary.save()
+
+def delete_glossary_file(glossary_id):
+    glossary = Glossary.objects.get(pk=glossary_id)
+    os.remove(str(glossary.document))
+    glossary.delete()
+    return os.path.basename(str(glossary.document))
+
 def insert_lang_code_with_1st_line(csv_path, temp_csv_path, source_lang_code, target_lang_code):
     with open(csv_path, mode="r", encoding="utf-8") as rf:
         reader = csv.reader(rf)
@@ -52,13 +97,13 @@ def insert_lang_code_with_1st_line(csv_path, temp_csv_path, source_lang_code, ta
 def create_glossary_on_google():
     project_id = os.getenv('GOOGLE_PROJECT_ID')
     bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
-    location = os.getenv('GOOGLE_LOCATION')  # The location of the glossary
+    location = os.getenv('GOOGLE_LOCATION')
 
     glossaries = Glossary.objects.filter(status=301)
     for glossary in glossaries:
         csv_basename = os.path.basename(str(glossary.document))
-        glossary_id = os.path.splitext(csv_basename)[0]
-        print("Creating {0}".format(glossary_id))
+        glossary_id = "kon-nyaku_" + str(glossary.id)
+        print("Creating {0}".format(csv_basename))
 
         try:
             client = translate.TranslationServiceClient()
@@ -89,7 +134,6 @@ def create_glossary_on_google():
             print('Created: {}'.format(result.name))
             print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
             glossary.terms = result.entry_count
-            glossary.glossary_id = glossary_id
             glossary.status = 302
         except AlreadyExists:
             glossary.status = 302
@@ -125,7 +169,6 @@ def create_glossary_list_tbody_html(request, status_cons):
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(glossary.id) + '</th>\n'\
             '          <td>' + download_html + '</td>\n'\
-            '          <td>' + glossary.glossary_id + '</td>\n'\
             '          <td>' + glossary.source_lang + '</td>\n'\
             '          <td>' + glossary.target_lang + '</td>\n'\
             '          <td>' + status_cons[glossary.status] + '</td>\n'\

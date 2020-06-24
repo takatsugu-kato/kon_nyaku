@@ -127,4 +127,5 @@ STATUS = {
     302: 'Created',
     303: 'Upload Error',
     304: 'Create Error',
+    305: 'Delete Error'
 }
