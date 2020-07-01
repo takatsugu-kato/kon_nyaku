@@ -151,7 +151,7 @@ def create_glossary_for_trans_tbody_html(request, source_lang="en", target_lang=
         download_html = '<a href="/media/{0}">{1}</a>'.format(glossary.document, glossary.name)
 
         html_string = html_string + '        <tr>\n'\
-            '          <td class="text-center"><input id="id_glossary_id" name="glossary_id" type="radio" value="' + str(glossary.id) +'"></td>\n'\
+            '          <td class="text-center"><input name="glossary_id" type="radio" value="' + str(glossary.id) +'"></td>\n'\
             '          <td>' + str(glossary.id) + '</td>\n'\
             '          <td>' + download_html + '</td>\n'\
             '          <td>' + glossary.source_lang + '</td>\n'\

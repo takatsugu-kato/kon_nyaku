@@ -67,7 +67,7 @@ $(function() {
             //set file translator language when language changed
             $('#file_translator_source_lang').val($('#id_source_lang').val());
             $('#file_translator_target_lang').val($('#id_target_lang').val());
-            $('#file_glossary').val($('#id_glossary_id').val());
+            $('#file_glossary').val($('input[name=glossary_id]:checked').val());
             $('#file_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
@@ -96,6 +96,8 @@ $(function() {
                     }
                 });
                 refreshFileList()
+                var radio = document.querySelector('input[type=radio][name=glossary_id]:checked');
+                radio.checked = false;
             });
         });
 
@@ -188,7 +190,8 @@ $(function() {
             //set file translator language when language changed
             $('#text_translator_source_lang').val($('#id_source_lang').val());
             $('#text_translator_target_lang').val($('#id_target_lang').val());
-            $('#text_glossary').val($('#id_glossary_id').val());
+            console.log($('input[name=glossary_id]:checked').val())
+            $('#text_glossary').val($('input[name=glossary_id]:checked').val());
             $('#text_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
@@ -216,6 +219,8 @@ $(function() {
                     });
                 }else{
                     $('#target_text').val(data.text)
+                    var radio = document.querySelector('input[type=radio][name=glossary_id]:checked');
+                    radio.checked = false;
                 }
             });
         }
@@ -279,7 +284,7 @@ $(function() {
             url:'/translate/get_file_list_data/',
             dataType:'json',
         }).done(function(data){
-            $(document.querySelector('body > div > table[1] > tbody')).html(data.html);
+            $(document.querySelector('#file_table')).html(data.html);
             if (data.done_flag === 0){
                 setTimeout(function(){
                     refreshFileList();
@@ -295,7 +300,7 @@ $(function() {
             url:'/translate/get_glossary_list_data/',
             dataType:'json',
         }).done(function(data){
-            $(document.querySelector('body > div > table > tbody')).html(data.html);
+            $(document.querySelector('#glossary_table')).html(data.html);
             if (data.done_flag === 0){
                 setTimeout(function(){
                     refreshFileList();
