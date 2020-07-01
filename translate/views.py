@@ -1,3 +1,5 @@
+#TODO 言語をかえたら表示するGrossaryを変える
+#TODO Glossary createとかのcronを設定する
 """
 views
 """
@@ -184,12 +186,16 @@ def file_tra(request, file_id):
 
 def glossary_del(request, glossary_id):
     """delete glossary"""
-    result = lib.glossary.delete_glossary_fron_google(glossary_id)
-    if result:
-        blob_name = lib.glossary.delete_glossary_file(glossary_id)
+    glossary_obj = Glossary.objects.get(pk=glossary_id)
+
+    #delete from local
+    blob_name = lib.glossary.delete_glossary_file(glossary_obj)
+    if glossary_obj.status == 301 or glossary_obj.status == 302: # delete from gs
         lib.glossary.delete_glossary_file_from_google(blob_name)
-    else:
-        lib.glossary.set_glossary_status(glossary_id, 305)
+    if glossary_obj.status == 302:
+        result = lib.glossary.delete_glossary_fron_google(glossary_id)
+        if not result:
+            lib.glossary.set_glossary_status(glossary_id, 305)
 
     return HttpResponse()
 

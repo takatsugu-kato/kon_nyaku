@@ -79,8 +79,7 @@ def set_glossary_status(glossary_id, status):
     glossary.status = status
     glossary.save()
 
-def delete_glossary_file(glossary_id):
-    glossary = Glossary.objects.get(pk=glossary_id)
+def delete_glossary_file(glossary):
     os.remove(str(glossary.document))
     glossary.delete()
     return os.path.basename(str(glossary.document))

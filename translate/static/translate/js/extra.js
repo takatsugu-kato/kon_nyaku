@@ -261,6 +261,24 @@ $(function() {
                 refreshGlossaryList()
             });
         });
+
+        //show delete modal window
+        $('table').on('click', '.del_confirm', function(){
+            $("#del_pk").text($(this).data("pk"));
+            $('#del_url').attr('href', "del/" + $(this).data("pk") + "/");
+        });
+
+        //delete glossary
+        $('#deleteModal').on('click', '#del_url', function(){
+            event.preventDefault();
+            $('#deleteModal').modal('hide');
+            var href = $(this).attr('href');
+            $.ajax({
+                url:href,
+            }).done(function(){
+                refreshGlossaryList()
+            });
+        });
     }
 
     //set the file name at hidden form when file is selected
