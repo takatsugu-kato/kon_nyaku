@@ -71,7 +71,7 @@ class Xlf():
         self.trans_unit_count = trans_unit_count
         return files
 
-    def translate(self, delete_format_tag=False, change_to_jotai=False, pseudo=False, django_file_obj=""):
+    def translate(self, delete_format_tag=False, google_glossary_id=None, change_to_jotai=False, pseudo=False, django_file_obj=""):
         """
         Transalte the file object
 
@@ -80,8 +80,8 @@ class Xlf():
                                    If you want to translate by smt, set the model to "base".
             delete_format_tag (bool, optioanl): Defaults to False.
                                    Flag of to delete the format tag when translate.
-            delete_format_tag (bool, optional): Defaults to False.
-                                               If you want to delete inline format tag, set to True.
+            google_glossary_id (bool, optional): Defaults to None.
+                                               Glossary id.
             change_to_jotai (bool, optional): Defaults to False.
                                                If you want to change keitai to jotai for Japanese, set to True.
             pseudo (bool, optional): Defaults to False.
@@ -100,6 +100,16 @@ class Xlf():
             os.getenv("GOOGLE_PROJECT_ID"),
             os.getenv("GOOGLE_LOCATION")
         )
+
+        glossary_config = None
+        if google_glossary_id:
+            glossary = translate_client.glossary_path(
+                os.getenv("GOOGLE_PROJECT_ID"),
+                os.getenv("GOOGLE_LOCATION"),  # The location of the glossary
+                google_glossary_id)
+
+            glossary_config = translate.types.TranslateTextGlossaryConfig(
+                glossary=glossary)
 
         unit_count = 0
         for file in self.files:
@@ -122,8 +132,12 @@ class Xlf():
                         parent=parent,
                         mime_type='text/html',
                         source_language_code=self.source_language,
-                        target_language_code=self.target_language)
-                    translated_text = translation.translations[0].translated_text
+                        target_language_code=self.target_language,
+                        glossary_config=glossary_config)
+                    if google_glossary_id:
+                        translated_text = translation.glossary_translations[0].translated_text
+                    else:
+                        translated_text = translation.translations[0].translated_text
                     if change_to_jotai:
                         masuda = Converter()
                         translated_text = masuda.keitai2jotai(translated_text)

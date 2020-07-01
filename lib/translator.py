@@ -15,7 +15,7 @@ from lib.xlf import Xlf
 from .xlf import PseudoClient
 from MasuDa import Converter
 
-def translate_text_by_google(string, source_language, target_language, jotai=False, pseudo=False):
+def translate_text_by_google(string, source_language, target_language, jotai=False, google_glossary_id=None, pseudo=False):
     """Translate using google translate
 
     Args:
@@ -38,14 +38,27 @@ def translate_text_by_google(string, source_language, target_language, jotai=Fal
         os.getenv("GOOGLE_PROJECT_ID"),
         os.getenv("GOOGLE_LOCATION")
     )
+    glossary_config = None
+    if google_glossary_id:
+        glossary = translate_client.glossary_path(
+            os.getenv("GOOGLE_PROJECT_ID"),
+            os.getenv("GOOGLE_LOCATION"),  # The location of the glossary
+            google_glossary_id)
+
+        glossary_config = translate.types.TranslateTextGlossaryConfig(
+            glossary=glossary)
 
     translation = translate_client.translate_text(
         contents=[lf2br(string)],
         parent=parent,
         mime_type='text/html',
         source_language_code=source_language,
-        target_language_code=target_language)
-    translated_text = translation.translations[0].translated_text
+        target_language_code=target_language,
+        glossary_config=glossary_config)
+    if google_glossary_id:
+        translated_text = translation.glossary_translations[0].translated_text
+    else:
+        translated_text = translation.translations[0].translated_text
     if jotai:
         masuda = Converter()
         translated_text = masuda.keitai2jotai(translated_text)
@@ -99,9 +112,11 @@ def translate_file(file_id):
         file.status = 101
         file.save()
         return
-
+    google_glossary_id = None
+    if file.glossary_to_use:
+        google_glossary_id = "kon-nyaku_{}".format(str(file.glossary_to_use.id))
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(delete_format_tag=file.delete_format_tag, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
+    xlf_obj.translate(delete_format_tag=file.delete_format_tag, google_glossary_id=google_glossary_id, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
 
     res = xlf_obj.back_to_xlf()
     if not res:

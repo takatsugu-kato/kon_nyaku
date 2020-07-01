@@ -89,13 +89,20 @@ def translate_text(request):
 
     jotai = bool(copied_post_data.get('jotai') == "true")
 
+    google_glossary_id = None
+    if copied_post_data.get('glossary'):
+        google_glossary_id = "kon-nyaku_{}".format(copied_post_data.get('glossary'))
+
     if form.is_valid():
         form.save()
-        transed_text = lib.translator.translate_text_by_google(copied_post_data.get('source_text'),
-                                                               copied_post_data.get('source_lang'),
-                                                               copied_post_data.get('target_lang'),
-                                                               jotai,
-                                                               pseudo=False)
+        transed_text = lib.translator.translate_text_by_google(
+            copied_post_data.get('source_text'),
+            copied_post_data.get('source_lang'),
+            copied_post_data.get('target_lang'),
+            jotai,
+            google_glossary_id,
+            pseudo=False
+        )
         result = {"result": "success", "text": transed_text}
     else:
         message = ""
@@ -140,7 +147,9 @@ def upload_file(request):
         jotai = bool(copied_post_data.get('jotai') == "true")
         copied_post_data['change_to_jotai'] = jotai
 
-        file_glossary = Glossary.objects.get(pk=int(copied_post_data.get('glossary')))
+        file_glossary = None
+        if copied_post_data.get('glossary'):
+            file_glossary = Glossary.objects.get(pk=int(copied_post_data.get('glossary')))
 
         form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
 
