@@ -196,12 +196,16 @@ def create_file_list_tbody_html(request, status_cons):
         else:
             style = "N/A"
 
+        glossary_to_use_id = ""
+        if file.glossary_to_use:
+            glossary_to_use_id = str(file.glossary_to_use.id)
 
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
             '          <td>' + file.target_lang + '</td>\n'\
+            '          <td>' + glossary_to_use_id + '</td>\n'\
             '          <td class="text-center">' + delete_format_tag_html + '</td>\n'\
             '          <td>' + style + '</td>\n'\
             '          <td>' + progress_html + '</td>\n'\

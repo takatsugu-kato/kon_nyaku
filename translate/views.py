@@ -14,6 +14,7 @@ from translate.forms import GlossaryForm
 from translate.forms import DocumentForm
 from translate.forms import TextForm
 from translate.models import File
+from translate.models import Glossary
 import lib.translator
 import lib.glossary
 from .consts import STATUS
@@ -138,9 +139,14 @@ def upload_file(request):
 
         jotai = bool(copied_post_data.get('jotai') == "true")
         copied_post_data['change_to_jotai'] = jotai
+
+        file_glossary = Glossary.objects.get(pk=int(copied_post_data.get('glossary')))
+
         form = DocumentForm(copied_post_data, request.FILES, initial=default_form_value)
 
         if form.is_valid():
+            file_record = form.save(commit=False)
+            file_record.glossary_to_use = file_glossary
             form.save()
             result = {"type": "success", "message": ["Uploaded"]}
         else:

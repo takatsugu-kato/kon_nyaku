@@ -148,11 +148,6 @@ def create_glossary_for_trans_tbody_html(request, source_lang="en", target_lang=
     html_string = ""
     for glossary in glossaries:
 
-        delete_button_html = ('<span data-toggle="tooltip" data-placement="top" title="Delete">'
-                              '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
-                              ' data-target="#deleteModal" data-pk="' + str(glossary.id) + '">'
-                              '<i class="fas fa-trash-alt"></i></a></span>\n')
-
         download_html = '<a href="/media/{0}">{1}</a>'.format(glossary.document, glossary.name)
 
         html_string = html_string + '        <tr>\n'\
