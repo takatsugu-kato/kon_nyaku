@@ -179,10 +179,12 @@ def create_glossary_list_tbody_html(request, status_cons):
         created_date = glossary.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
-        delete_button_html = ('<span data-toggle="tooltip" data-placement="top" title="Delete">'
-                              '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
-                              ' data-target="#deleteModal" data-pk="' + str(glossary.id) + '">'
-                              '<i class="fas fa-trash-alt"></i></a></span>\n')
+        delete_button_html = (
+            '<span data-toggle="tooltip" data-placement="top" title="Delete">'
+            '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
+            ' data-target="#deleteModal" data-pk="' + str(glossary.id) + '">'
+            '<i class="fas fa-trash-alt"></i></a></span>\n'
+            )
 
         download_html = '<a href="/media/{0}">{1}</a>'.format(glossary.document, glossary.name)
 

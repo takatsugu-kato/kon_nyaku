@@ -116,7 +116,13 @@ def translate_file(file_id):
     if file.glossary_to_use:
         google_glossary_id = "kon-nyaku_{}".format(str(file.glossary_to_use.id))
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(delete_format_tag=file.delete_format_tag, google_glossary_id=google_glossary_id, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
+    xlf_obj.translate(
+        delete_format_tag=file.delete_format_tag,
+        google_glossary_id=google_glossary_id,
+        change_to_jotai=file.change_to_jotai,
+        pseudo=False,
+        django_file_obj=file
+    )
 
     res = xlf_obj.back_to_xlf()
     if not res:
@@ -168,35 +174,49 @@ def create_file_list_tbody_html(request, status_cons):
         created_date = file.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
-        translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled">'
-                                 '<i class="fas fa-language"></i></a>\n')
-        delete_button_html = ('<span data-toggle="tooltip" data-placement="top" title="Delete">'
-                              '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
-                              ' data-target="#deleteModal" data-pk="' + str(file.id) + '">'
-                              '<i class="fas fa-trash-alt"></i></a></span>\n')
+        translate_button_html = (
+            '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled">'
+            '<i class="fas fa-language"></i></a>\n'
+        )
+        delete_button_html = (
+            '<span data-toggle="tooltip" data-placement="top" title="Delete">'
+            '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
+            ' data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+            '<i class="fas fa-trash-alt"></i></a></span>\n'
+        )
 
         #set done flag
         if file.status == 1:
             done_flag = 0
-            delete_button_html = ('<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled"'
-                                  ' data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">'
-                                  '<i class="fas fa-trash-alt"></i></a>\n')
+            delete_button_html = (
+                '<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled"'
+                ' data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+                '<i class="fas fa-trash-alt"></i></a>\n'
+            )
 
         if file.progress == 100:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'
-                             '<a class="progress_a download_confirm" href="" data-toggle="modal"'
-                             'data-target="#downloadModal" data-pk="' + str(file.id) + '">'
-                             '<i class="fas fa-download"></i> Download</a></div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'
+                '<a class="progress_a download_confirm" href="" data-toggle="modal"'
+                'data-target="#downloadModal" data-pk="' + str(file.id) + '">'
+                '<i class="fas fa-download"></i> Download</a></div></div>'
+            )
         elif file.status == 0:
             progress_html = status_cons[file.status]
-            translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"'
-                                     ' data-toggle="tooltip" data-placement="top" title="Translate with Google"><i class="fas fa-language"></i></a>\n')
+            translate_button_html = (
+                '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"'
+                ' data-toggle="tooltip" data-placement="top" title="Translate with Google"><i class="fas fa-language"></i></a>\n'
+            )
         elif file.status > 100:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-danger"'
-                             ' role="progressbar" style="width: 100%">' + status_cons[file.status] + '</div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger"'
+                ' role="progressbar" style="width: 100%">' + status_cons[file.status] + '</div></div>'
+            )
         else:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated"'
-                             ' role="progressbar" style="width: '+str(file.progress)+'%"></div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated"'
+                ' role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
+            )
 
         if file.delete_format_tag:
             delete_format_tag_html = '<i class="fas fa-eraser"></i>'

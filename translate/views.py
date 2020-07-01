@@ -37,13 +37,16 @@ def glossary(request):
 
     tbody_html = lib.glossary.create_glossary_list_tbody_html(request, STATUS)
 
-    return render(request,
-                  'translate/glossary.html',
-                  {'file_list_data': tbody_html,
-                   'form': form,
-                   'STATUS': STATUS,
-                   'nbar': "glossary"},
-                 )
+    return render(
+        request,
+        'translate/glossary.html',
+        {
+            'file_list_data': tbody_html,
+            'form': form,
+            'STATUS': STATUS,
+            'nbar': "glossary"
+        },
+    )
 
 # Create your views here.
 def translator(request):
@@ -56,21 +59,25 @@ def translator(request):
 
     glossry_tbody_html = lib.glossary.create_glossary_for_trans_tbody_html(request)
 
-    return render(request,
-                  'translate/translator.html',
-                  {'file_list_data': tbody_html,
-                   'glossary_list_data': glossry_tbody_html,
-                   'form': form,
-                   'STATUS': STATUS,
-                   'nbar': "trans"},
-                 )
+    return render(
+        request,
+        'translate/translator.html',
+        {
+            'file_list_data': tbody_html,
+            'glossary_list_data': glossry_tbody_html,
+            'form': form,
+            'STATUS': STATUS,
+            'nbar': "trans"
+        },
+    )
 
 def help_index(request):
     """help page"""
-    return render(request,
-                  'translate/help.html',
-                  {'nbar': "help"},
-                 )
+    return render(
+        request,
+        'translate/help.html',
+        {'nbar': "help"},
+    )
 
 def translate_text(request):
     """translate text"""

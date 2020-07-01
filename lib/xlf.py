@@ -77,24 +77,23 @@ class Xlf():
 
         Args:
             model (str, optional): Defaults to "nmt". Model of Google translate.
-                                   If you want to translate by smt, set the model to "base".
+                                    If you want to translate by smt, set the model to "base".
             delete_format_tag (bool, optioanl): Defaults to False.
-                                   Flag of to delete the format tag when translate.
+                                    Flag of to delete the format tag when translate.
             google_glossary_id (bool, optional): Defaults to None.
-                                               Glossary id.
+                                                    Glossary id.
             change_to_jotai (bool, optional): Defaults to False.
-                                               If you want to change keitai to jotai for Japanese, set to True.
+                                                If you want to change keitai to jotai for Japanese, set to True.
             pseudo (bool, optional): Defaults to False.
-                                     If you want to pseudo translate, set to True.
-                                     For example, you don't to want to send to Google.
+                                        If you want to pseudo translate, set to True.
+                                        For example, you don't to want to send to Google.
             django_file_obj (django file object, optional): Defaults to null.
-                                                Django file object for setting the progress
+                                                                Django file object for setting the progress
         """
         if pseudo:
             translate_client = PseudoClient()
         else:
             translate_client = translate.TranslationServiceClient()
-
 
         parent = translate_client.location_path(
             os.getenv("GOOGLE_PROJECT_ID"),
@@ -152,8 +151,10 @@ class Xlf():
         for file in self.files:
             for trans_unit in file.trans_units:
                 new_target_element = self.__create_xml_string_for_element(trans_unit.seg_target)
-                condition = ('xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'
-                             .format(file.original, trans_unit.trans_unit_id))
+                condition = (
+                    'xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'
+                    .format(file.original, trans_unit.trans_unit_id)
+                )
                 trans_unit = self.root.find(condition, self.namespace)
                 target = trans_unit.find('xliff:target', self.namespace)
                 trans_unit.remove(target)
@@ -177,8 +178,10 @@ class Xlf():
 
         xml_string = '<target xml:lang="{0}">'.format(self.target_language)
         for mrk in segment_obj:
-            xml_string = (xml_string +
-                          '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.segment_id, mrk.string))
+            xml_string = (
+                xml_string +
+                '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.segment_id, mrk.string)
+            )
         xml_string = xml_string + "</target>"
         tree = etree.fromstring(xml_string)
         return tree
@@ -256,8 +259,7 @@ class PseudoClient():
         pass
 
     @staticmethod
-    def translate_text(contents, parent=None, mime_type=None, target_language_code=None,
-                  source_language_code=None):
+    def translate_text(contents, parent=None, mime_type=None, target_language_code=None,source_language_code=None):
         """
         Translate pseudo.
 
