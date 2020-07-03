@@ -49,7 +49,6 @@ $(function() {
             window.location.assign("../file_download/" + $(this).data("pk"));
         });
 
-
         //focus del button when modal windows is displayed
         $('#deleteModal').on('shown.bs.modal', function () {
             $('#del_url').focus();
@@ -253,6 +252,19 @@ $(function() {
                 $(document.querySelector('#glossary_table')).html(data.html);
             });
         }
+
+        //deselect radio
+        var number;
+        $(function(){
+            $('input').click(function(){
+                if($(this).val() == number) {
+                    $(this).prop('checked', false);
+                    number = 0;
+                } else {
+                    number = $(this).val();
+                }
+            });
+        });
     }
 
     if (path == "/translate/glossary/"){
