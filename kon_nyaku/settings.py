@@ -18,7 +18,7 @@ import environ
 if socket.gethostname() == "WIN-518": # Develop
     DEBUG = True
 else: # Productuin
-    DEBUG = False
+    DEBUG = True
     ADMINS = (
         ('Takatsugu Kato', 'kato@ideainstitute.co.jp'),
     )

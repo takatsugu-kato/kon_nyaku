@@ -259,7 +259,7 @@ class PseudoClient():
         pass
 
     @staticmethod
-    def translate_text(contents, parent=None, mime_type=None, target_language_code=None,source_language_code=None):
+    def translate_text(contents, parent=None, mime_type=None, target_language_code=None, source_language_code=None, glossary_config=None):
         """
         Translate pseudo.
 
