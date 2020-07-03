@@ -4,6 +4,7 @@ This modules is related to translator
 import os
 import html
 import pytz
+import logging
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
@@ -29,6 +30,8 @@ def translate_text_by_google(string, source_language, target_language, jotai=Fal
     Returns:
         str: translated string
     """
+    # logger = logging.getLogger(__name__)
+    # logger.debug('info is logged')
     if pseudo:
         translate_client = PseudoClient()
     else:

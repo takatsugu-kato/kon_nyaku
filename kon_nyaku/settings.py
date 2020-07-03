@@ -165,7 +165,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR + '/log/debug.log',
             'maxBytes': 50000,
@@ -179,18 +179,8 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'main':{
-            'handlers':['file', 'console'],
-            'level':'DEBUG',
-            'propagate':True,
-        },
         'translate': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         },
