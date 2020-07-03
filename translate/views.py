@@ -31,13 +31,11 @@ def translate_index(request):
 
 def glossary(request):
     """glossary views"""
-    lib.glossary.upload_glossary_on_google()
-    lib.glossary.create_glossary_on_google()
     default_form_value = {'target_lang':'ja'}
 
     form = GlossaryForm(initial=default_form_value)
 
-    tbody_html = lib.glossary.create_glossary_list_tbody_html(request, STATUS)
+    tbody_html = lib.glossary.create_glossary_for_glossary_view_tbody_html(request, STATUS)
 
     return render(
         request,
@@ -59,7 +57,7 @@ def translator(request):
 
     tbody_html = lib.translator.create_file_list_tbody_html(request, STATUS)
 
-    glossry_tbody_html = lib.glossary.create_glossary_for_trans_tbody_html(request)
+    glossry_tbody_html = lib.glossary.create_glossary_for_trans_view_tbody_html(request)
 
     return render(
         request,
@@ -210,9 +208,18 @@ def get_file_list_data(request):
     tbody_html = lib.translator.create_file_list_tbody_html(request, STATUS)
     return JsonResponse(tbody_html)
 
-def get_glossary_list_data(request):
+def get_glossary_list_data_for_glossary_view(request):
     """get glossary list"""
-    tbody_html = lib.glossary.create_glossary_list_tbody_html(request, STATUS)
+    tbody_html = lib.glossary.create_glossary_for_glossary_view_tbody_html(request, STATUS)
+    return JsonResponse(tbody_html)
+
+def get_glossary_list_data_for_translator_view(request):
+    """get glossary list"""
+    sl = request.POST.get('sl')
+    tl = request.POST.get('tl')
+    print(sl)
+    print(tl)
+    tbody_html = lib.glossary.create_glossary_for_trans_view_tbody_html(request, sl, tl)
     return JsonResponse(tbody_html)
 
 

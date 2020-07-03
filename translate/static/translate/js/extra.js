@@ -145,6 +145,7 @@ $(function() {
             $('#source_text').val($('#target_text').val());
             $('#target_text').val(source_text);
             disableJotaiCheckbox()
+            refreshGlossaryListForTranslatorView()
         });
 
         //swap language when select same language
@@ -155,6 +156,7 @@ $(function() {
             if (source_lang === $('#id_target_lang').val()){
                 $('#id_target_lang').val(previous);
                 disableJotaiCheckbox()
+                refreshGlossaryListForTranslatorView()
             }
             previous = this.value;
         });
@@ -165,12 +167,18 @@ $(function() {
             if (target_lang === $('#id_source_lang').val()){
                 $('#id_source_lang').val(previous);
                 disableJotaiCheckbox()
+                refreshGlossaryListForTranslatorView()
             }
             previous = this.value;
         });
 
+        $("#id_source_lang").change(function() {
+            refreshGlossaryListForTranslatorView()
+        });
+
         $("#id_target_lang").change(function() {
             disableJotaiCheckbox()
+            refreshGlossaryListForTranslatorView()
         });
 
         //only enable jotai checkbox if selected target is Japanese
@@ -224,10 +232,31 @@ $(function() {
                 }
             });
         }
+
+        function refreshGlossaryListForTranslatorView(){
+            var html;
+            var csrf_token = getCookie("csrftoken");
+            $.ajax({
+                type:'POST',
+                url:'/translate/get_glossary_list_data_for_translator_view/',
+                data: {
+                    sl: $('#id_source_lang').val(),
+                    tl: $('#id_target_lang').val()
+                },
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+                dataType:'json',
+            }).done(function(data){
+                $(document.querySelector('#glossary_table')).html(data.html);
+            });
+        }
     }
 
     if (path == "/translate/glossary/"){
-        refreshGlossaryList()
+        refreshGlossaryListForGlossaryView()
         //upload glossary
         $('#upload_glossary').on('click', function() {
             event.preventDefault();
@@ -258,7 +287,7 @@ $(function() {
                         align: 'center'
                     }
                 });
-                refreshGlossaryList()
+                refreshGlossaryListForGlossaryView()
             });
         });
 
@@ -276,7 +305,7 @@ $(function() {
             $.ajax({
                 url:href,
             }).done(function(){
-                refreshGlossaryList()
+                refreshGlossaryListForGlossaryView()
             });
         });
     }
@@ -312,18 +341,13 @@ $(function() {
     }
 
     //reflesh glossary list
-    function refreshGlossaryList(){
+    function refreshGlossaryListForGlossaryView(){
         var html;
         $.ajax({
-            url:'/translate/get_glossary_list_data/',
+            url:'/translate/get_glossary_list_data_for_glossary_view/',
             dataType:'json',
         }).done(function(data){
             $(document.querySelector('#glossary_table')).html(data.html);
-            if (data.done_flag === 0){
-                setTimeout(function(){
-                    refreshFileList();
-                },5000);
-            }
         });
     }
 
