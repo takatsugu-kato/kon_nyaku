@@ -2,6 +2,7 @@
 This modules is to handle xlf file
 """
 
+import os
 import re
 import string as string_module
 import random
@@ -70,29 +71,44 @@ class Xlf():
         self.trans_unit_count = trans_unit_count
         return files
 
-    def translate(self, model="nmt", delete_format_tag=False, change_to_jotai=False, pseudo=False, django_file_obj=""):
+    def translate(self, delete_format_tag=False, google_glossary_id=None, change_to_jotai=False, pseudo=False, django_file_obj=""):
         """
         Transalte the file object
 
         Args:
             model (str, optional): Defaults to "nmt". Model of Google translate.
-                                   If you want to translate by smt, set the model to "base".
+                                    If you want to translate by smt, set the model to "base".
             delete_format_tag (bool, optioanl): Defaults to False.
-                                   Flag of to delete the format tag when translate.
-            delete_format_tag (bool, optional): Defaults to False.
-                                               If you want to delete inline format tag, set to True.
+                                    Flag of to delete the format tag when translate.
+            google_glossary_id (bool, optional): Defaults to None.
+                                                    Glossary id.
             change_to_jotai (bool, optional): Defaults to False.
-                                               If you want to change keitai to jotai for Japanese, set to True.
+                                                If you want to change keitai to jotai for Japanese, set to True.
             pseudo (bool, optional): Defaults to False.
-                                     If you want to pseudo translate, set to True.
-                                     For example, you don't to want to send to Google.
+                                        If you want to pseudo translate, set to True.
+                                        For example, you don't to want to send to Google.
             django_file_obj (django file object, optional): Defaults to null.
-                                                Django file object for setting the progress
+                                                                Django file object for setting the progress
         """
         if pseudo:
             translate_client = PseudoClient()
         else:
-            translate_client = translate.Client()
+            translate_client = translate.TranslationServiceClient()
+
+        parent = translate_client.location_path(
+            os.getenv("GOOGLE_PROJECT_ID"),
+            os.getenv("GOOGLE_LOCATION")
+        )
+
+        glossary_config = None
+        if google_glossary_id:
+            glossary = translate_client.glossary_path(
+                os.getenv("GOOGLE_PROJECT_ID"),
+                os.getenv("GOOGLE_LOCATION"),  # The location of the glossary
+                google_glossary_id)
+
+            glossary_config = translate.types.TranslateTextGlossaryConfig(
+                glossary=glossary)
 
         unit_count = 0
         for file in self.files:
@@ -110,12 +126,17 @@ class Xlf():
                     else:
                         xlfstring.change_xlf_inline_tag_to_i_tag()
                     self.charactor_count = self.charactor_count + len(xlfstring.string)
-                    translation = translate_client.translate(
-                        xlfstring.string,
-                        model=model,
-                        source_language=self.source_language,
-                        target_language=self.target_language)
-                    translated_text = translation['translatedText']
+                    translation = translate_client.translate_text(
+                        contents=[xlfstring.string],
+                        parent=parent,
+                        mime_type='text/html',
+                        source_language_code=self.source_language,
+                        target_language_code=self.target_language,
+                        glossary_config=glossary_config)
+                    if google_glossary_id:
+                        translated_text = translation.glossary_translations[0].translated_text
+                    else:
+                        translated_text = translation.translations[0].translated_text
                     if change_to_jotai:
                         masuda = Converter()
                         translated_text = masuda.keitai2jotai(translated_text)
@@ -130,8 +151,10 @@ class Xlf():
         for file in self.files:
             for trans_unit in file.trans_units:
                 new_target_element = self.__create_xml_string_for_element(trans_unit.seg_target)
-                condition = ('xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'
-                             .format(file.original, trans_unit.trans_unit_id))
+                condition = (
+                    'xliff:file[@original="{0}"]/xliff:body/xliff:trans-unit[@id="{1}"]'
+                    .format(file.original, trans_unit.trans_unit_id)
+                )
                 trans_unit = self.root.find(condition, self.namespace)
                 target = trans_unit.find('xliff:target', self.namespace)
                 trans_unit.remove(target)
@@ -155,8 +178,10 @@ class Xlf():
 
         xml_string = '<target xml:lang="{0}">'.format(self.target_language)
         for mrk in segment_obj:
-            xml_string = (xml_string +
-                          '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.segment_id, mrk.string))
+            xml_string = (
+                xml_string +
+                '<mrk mid="{0}" mtype="seg">{1}</mrk>'.format(mrk.segment_id, mrk.string)
+            )
         xml_string = xml_string + "</target>"
         tree = etree.fromstring(xml_string)
         return tree
@@ -230,9 +255,11 @@ class PseudoClient():
         self.target_language = target_language
 
     @staticmethod
-    def translate(values, target_language=None,
-                  source_language=None,
-                  model=None):
+    def location_path(project_id, location):
+        pass
+
+    @staticmethod
+    def translate_text(contents, parent=None, mime_type=None, target_language_code=None,source_language_code=None):
         """
         Translate pseudo.
 
@@ -248,7 +275,7 @@ class PseudoClient():
         punctuation = ['.', ':', ';', ',', '!', '?']
 
         #Firstry, split by tags
-        tag_splitted_list = re.split('(<span translate="no" id="[0-9]+?">.*?</span>|<.*?>)', values)
+        tag_splitted_list = re.split('(<span translate="no" id="[0-9]+?">.*?</span>|<.*?>)', contents[0])
         words = []
 
         #Secondry, split by space
@@ -277,9 +304,18 @@ class PseudoClient():
                 words[i] = ''.join(random.choices(string_module.ascii_lowercase, k=length))
                 words[i] = pseudo_first_chara + words[i] + last_chara
 
-        translations = dict()
-        translations['translatedText'] = "".join(words)
-        return translations
+        translation = "".join(words)
+        response = PseudoTranslateTextResponse()
+        response.translations = [PseudoResponsedCompositeContainer(translation)]
+        return response
+
+class PseudoTranslateTextResponse():
+    def __init__(self):
+        self.translations = list()
+
+class PseudoResponsedCompositeContainer():
+    def __init__(self, text):
+        self.translated_text = text
 
 class File():
     """

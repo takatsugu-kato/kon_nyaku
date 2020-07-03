@@ -6,6 +6,7 @@ import os
 from django import forms
 from translate.models import File
 from translate.models import Text
+from translate.models import Glossary
 
 from .consts import LANG
 from .consts import SUPPORTED_FILE_FORMAT
@@ -25,7 +26,18 @@ class DocumentForm(forms.ModelForm):
     """
     class Meta:
         model = File
-        fields = ('name', 'source_lang', 'target_lang', 'document', 'file_session_key', 'ip_address', 'chara_count', 'delete_format_tag', 'change_to_jotai')
+        fields = (
+            'name',
+            'source_lang',
+            'target_lang',
+            'document',
+            'file_session_key',
+            'ip_address',
+            'chara_count',
+            'delete_format_tag',
+            'change_to_jotai',
+            'glossary_to_use'
+        )
 
         SOURCE_LANG = LANG
         TARGET_LANG = LANG
@@ -54,10 +66,6 @@ class DocumentForm(forms.ModelForm):
             raise forms.ValidationError('This file does not support.')
         return name
 
-    # def clean_source_lang(self): #ToDo source_langとtarget_langが同じだったときのバリデーションをいれる
-    #     source_lang = self.cleaned_data['source_lang']
-    #     raise forms.ValidationError('source_lang のバリデーションに引っかかりました。')
-
 class TextForm(forms.ModelForm):
     """
     Text fomr
@@ -73,6 +81,33 @@ class TextForm(forms.ModelForm):
         TARGET_LANG = LANG
 
         widgets = {
+            'source_lang': forms.Select(choices=SOURCE_LANG),
+            'target_lang': forms.Select(choices=TARGET_LANG),
+        }
+
+class GlossaryForm(forms.ModelForm):
+    """Glossary form
+
+    Args:
+        forms ([type]): [description]
+
+    Raises:
+        forms.ValidationError: [description]
+        forms.ValidationError: [description]
+
+    Returns:
+        [type]: [description]
+    """
+    class Meta:
+        model = Glossary
+        fields = ('name', 'source_lang', 'target_lang', 'document', 'status')
+
+        SOURCE_LANG = LANG
+        TARGET_LANG = LANG
+
+        widgets = {
+            'name': forms.HiddenInput(attrs={'id': "id_name"}),
+            'document': forms.FileInput(attrs={'style': 'display:none', 'accept': '.csv'}),
             'source_lang': forms.Select(choices=SOURCE_LANG),
             'target_lang': forms.Select(choices=TARGET_LANG),
         }

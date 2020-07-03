@@ -15,7 +15,7 @@ from lib.xlf import Xlf
 from .xlf import PseudoClient
 from MasuDa import Converter
 
-def translate_text_by_google(string, source_language, target_language, jotai=False, model="nmt", pseudo=False):
+def translate_text_by_google(string, source_language, target_language, jotai=False, google_glossary_id=None, pseudo=False):
     """Translate using google translate
 
     Args:
@@ -32,13 +32,33 @@ def translate_text_by_google(string, source_language, target_language, jotai=Fal
     if pseudo:
         translate_client = PseudoClient()
     else:
-        translate_client = translate.Client()
-    translation = translate_client.translate(
-        lf2br(string),
-        model=model,
-        source_language=source_language,
-        target_language=target_language)
-    translated_text = translation['translatedText']
+        translate_client = translate.TranslationServiceClient()
+
+    parent = translate_client.location_path(
+        os.getenv("GOOGLE_PROJECT_ID"),
+        os.getenv("GOOGLE_LOCATION")
+    )
+    glossary_config = None
+    if google_glossary_id:
+        glossary = translate_client.glossary_path(
+            os.getenv("GOOGLE_PROJECT_ID"),
+            os.getenv("GOOGLE_LOCATION"),  # The location of the glossary
+            google_glossary_id)
+
+        glossary_config = translate.types.TranslateTextGlossaryConfig(
+            glossary=glossary)
+
+    translation = translate_client.translate_text(
+        contents=[lf2br(string)],
+        parent=parent,
+        mime_type='text/html',
+        source_language_code=source_language,
+        target_language_code=target_language,
+        glossary_config=glossary_config)
+    if google_glossary_id:
+        translated_text = translation.glossary_translations[0].translated_text
+    else:
+        translated_text = translation.translations[0].translated_text
     if jotai:
         masuda = Converter()
         translated_text = masuda.keitai2jotai(translated_text)
@@ -68,6 +88,7 @@ def br2lf(string):
     string_new = string.replace('<br>', '\n')
     return string_new
 
+
 @background(queue='translate_queue', schedule=5)
 def translate_file(file_id):
     """translate file
@@ -83,7 +104,6 @@ def translate_file(file_id):
 
     source_lang = file.source_lang
     target_lang = file.target_lang
-    translation_model = "nmt"
     # to_trans_file = "./sample_file/test.docx"
 
     okapi_obj = Okapi(source_lang, target_lang)
@@ -92,9 +112,17 @@ def translate_file(file_id):
         file.status = 101
         file.save()
         return
-
+    google_glossary_id = None
+    if file.glossary_to_use:
+        google_glossary_id = "kon-nyaku_{}".format(str(file.glossary_to_use.id))
     xlf_obj = Xlf(to_trans_file + ".xlf")
-    xlf_obj.translate(translation_model, delete_format_tag=file.delete_format_tag, change_to_jotai=file.change_to_jotai, pseudo=False, django_file_obj=file)
+    xlf_obj.translate(
+        delete_format_tag=file.delete_format_tag,
+        google_glossary_id=google_glossary_id,
+        change_to_jotai=file.change_to_jotai,
+        pseudo=False,
+        django_file_obj=file
+    )
 
     res = xlf_obj.back_to_xlf()
     if not res:
@@ -146,35 +174,49 @@ def create_file_list_tbody_html(request, status_cons):
         created_date = file.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
-        translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled">'
-                                 '<i class="fas fa-language"></i></a>\n')
-        delete_button_html = ('<span data-toggle="tooltip" data-placement="top" title="Delete">'
-                              '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
-                              ' data-target="#deleteModal" data-pk="' + str(file.id) + '">'
-                              '<i class="fas fa-trash-alt"></i></a></span>\n')
+        translate_button_html = (
+            '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm disabled">'
+            '<i class="fas fa-language"></i></a>\n'
+        )
+        delete_button_html = (
+            '<span data-toggle="tooltip" data-placement="top" title="Delete">'
+            '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
+            ' data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+            '<i class="fas fa-trash-alt"></i></a></span>\n'
+        )
 
         #set done flag
         if file.status == 1:
             done_flag = 0
-            delete_button_html = ('<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled"'
-                                  ' data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">'
-                                  '<i class="fas fa-trash-alt"></i></a>\n')
+            delete_button_html = (
+                '<a href="" class="btn btn-danger btn-mergen-sm del_confirm disabled"'
+                ' data-toggle="modal" data-target="#deleteModal" data-pk="' + str(file.id) + '">'
+                '<i class="fas fa-trash-alt"></i></a>\n'
+            )
 
         if file.progress == 100:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'
-                             '<a class="progress_a download_confirm" href="" data-toggle="modal"'
-                             'data-target="#downloadModal" data-pk="' + str(file.id) + '">'
-                             '<i class="fas fa-download"></i> Download</a></div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:100%">'
+                '<a class="progress_a download_confirm" href="" data-toggle="modal"'
+                'data-target="#downloadModal" data-pk="' + str(file.id) + '">'
+                '<i class="fas fa-download"></i> Download</a></div></div>'
+            )
         elif file.status == 0:
             progress_html = status_cons[file.status]
-            translate_button_html = ('<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"'
-                                     ' data-toggle="tooltip" data-placement="top" title="Translate with Google"><i class="fas fa-language"></i></a>\n')
+            translate_button_html = (
+                '<a href="tra/' + str(file.id) + '" class="tra btn btn-primary btn-mergen-sm"'
+                ' data-toggle="tooltip" data-placement="top" title="Translate with Google"><i class="fas fa-language"></i></a>\n'
+            )
         elif file.status > 100:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped bg-danger"'
-                             ' role="progressbar" style="width: 100%">' + status_cons[file.status] + '</div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger"'
+                ' role="progressbar" style="width: 100%">' + status_cons[file.status] + '</div></div>'
+            )
         else:
-            progress_html = ('<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated"'
-                             ' role="progressbar" style="width: '+str(file.progress)+'%"></div></div>')
+            progress_html = (
+                '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated"'
+                ' role="progressbar" style="width: '+str(file.progress)+'%"></div></div>'
+            )
 
         if file.delete_format_tag:
             delete_format_tag_html = '<i class="fas fa-eraser"></i>'
@@ -189,12 +231,16 @@ def create_file_list_tbody_html(request, status_cons):
         else:
             style = "N/A"
 
+        glossary_to_use_id = ""
+        if file.glossary_to_use:
+            glossary_to_use_id = str(file.glossary_to_use.id)
 
         html_string = html_string + '        <tr>\n'\
             '          <th scope="row">' + str(file.id) + '</th>\n'\
             '          <td>' + file.name + '</td>\n'\
             '          <td>' + file.source_lang + '</td>\n'\
             '          <td>' + file.target_lang + '</td>\n'\
+            '          <td>' + glossary_to_use_id + '</td>\n'\
             '          <td class="text-center">' + delete_format_tag_html + '</td>\n'\
             '          <td>' + style + '</td>\n'\
             '          <td>' + progress_html + '</td>\n'\
