@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import socket
 import environ
+import logging
 
 # Separete setting for Develop or Production server
 if socket.gethostname() == "WIN-518": # Develop
@@ -149,3 +150,49 @@ MEDIA_URL = '/media/'
 SESSION_SAVE_EVERY_REQUEST = True # 1リクエストごとにセッション情報を更新
 
 FILE_UPLOAD_PERMISSIONS = 0o644
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters':{
+
+        'standard':{
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'debug.log',
+            'maxBytes': 50000,
+            'backupCount':2,
+            'formatter':'standard',
+        },
+        'console':{
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+            'formatter':'standard'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'main':{
+            'handlers':['file', 'console'],
+            'level':'DEBUG',
+            'propagate':True,
+        },
+        'translate': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

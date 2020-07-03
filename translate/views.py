@@ -1,11 +1,10 @@
-#TODO 言語をかえたら表示するGrossaryを変える
-#TODO Glossary createとかのcronを設定する
 """
 views
 """
 import mimetypes
 import os
 import io
+import logging
 import urllib.parse
 from django.shortcuts import render
 from django.shortcuts import redirect
