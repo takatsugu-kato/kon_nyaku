@@ -8,10 +8,10 @@
   <h2 class="border-bottom mt-2">Upload Glossary</h2>
   <form method="post" enctype="multipart/form-data" id="glossary_upload">
     <div class="row">
-      <div class="col-5">Source Language</div>
-      <div class="col-5 offset-md-2">Target Language</div>
-      {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
-      {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
+      <div class="col-6">Source Language</div>
+      <div class="col-6">Target Language</div>
+      {% bootstrap_field form.source_lang show_label=False form_group_class="col-6 mb-2" %}
+      {% bootstrap_field form.target_lang show_label=False form_group_class="col-6" %}
     </div>
     <div class="form-row">
         {% csrf_token %}
