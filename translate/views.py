@@ -50,6 +50,8 @@ def glossary(request):
 # Create your views here.
 def translator(request):
     """get list of files"""
+    # logger = logging.getLogger(__name__)
+    # logger.info('info is logged')
     default_form_value = {'target_lang':'ja'}
 
     form = DocumentForm(initial=default_form_value)
