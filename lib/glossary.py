@@ -12,33 +12,37 @@ from google.cloud import storage
 from google.cloud import translate
 from google.api_core.exceptions import AlreadyExists
 
-def upload_glossary_on_google():
+@background(queue='generate_glossary_queue', schedule=5)
+def generate_glossary(glossary_id):
+    upload_glossary_on_google(glossary_id)
+    create_glossary_on_google(glossary_id)
+
+def upload_glossary_on_google(glossary_id):
     bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
 
-    glossaries = Glossary.objects.filter(status=300)
+    glossary = Glossary.objects.get(pk=glossary_id)
 
     temp_csv_path = settings.MEDIA_ROOT + "/media/glossary/temp.csv"
-    for glossary in glossaries:
-        glos_path = str(glossary.document)
-        glos_path = os.path.join(settings.MEDIA_ROOT, glos_path)
+    glos_path = str(glossary.document)
+    glos_path = os.path.join(settings.MEDIA_ROOT, glos_path)
 
-        print("Uploading {0}".format(glos_path))
-        try:
+    print("Uploading {0}".format(glos_path))
+    try:
 
-            insert_lang_code_with_1st_line(glos_path, temp_csv_path, glossary.source_lang, glossary.target_lang)
-            storage_client = storage.Client()
-            bucket = storage_client.bucket(bucket_name)
-            destination_blob_name = os.path.basename(glos_path)
-            blob = bucket.blob(destination_blob_name)
+        insert_lang_code_with_1st_line(glos_path, temp_csv_path, glossary.source_lang, glossary.target_lang)
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        destination_blob_name = os.path.basename(glos_path)
+        blob = bucket.blob(destination_blob_name)
 
-            blob.upload_from_filename(temp_csv_path)
+        blob.upload_from_filename(temp_csv_path)
 
-            glossary.status = 301
-        except Exception as e:
-            print(e)
-            glossary.status = 303
-        os.remove(temp_csv_path)
-        glossary.save()
+        glossary.status = 301
+    except Exception as e:
+        print(e)
+        glossary.status = 303
+    os.remove(temp_csv_path)
+    glossary.save()
 
 def delete_glossary_fron_google(glossary_id):
     project_id = os.getenv('GOOGLE_PROJECT_ID')
@@ -93,52 +97,51 @@ def insert_lang_code_with_1st_line(csv_path, temp_csv_path, source_lang_code, ta
             for line in reader:
                 writer.writerow([line[0], line[1]])
 
-def create_glossary_on_google():
+def create_glossary_on_google(glossary_id):
     project_id = os.getenv('GOOGLE_PROJECT_ID')
     bucket_name = os.getenv('GLOSSARY_BACKET_NAME')
     location = os.getenv('GOOGLE_LOCATION')
 
-    glossaries = Glossary.objects.filter(status=301)
-    for glossary in glossaries:
-        csv_basename = os.path.basename(str(glossary.document))
-        glossary_id = "kon-nyaku_" + str(glossary.id)
-        print("Creating {0}".format(csv_basename))
+    glossary = Glossary.objects.get(pk=glossary_id)
+    csv_basename = os.path.basename(str(glossary.document))
+    glossary_id = "kon-nyaku_" + str(glossary.id)
+    print("Creating {0}".format(csv_basename))
 
-        try:
-            client = translate.TranslationServiceClient()
-            name = client.glossary_path(
-                project_id,
-                location,
-                glossary_id)
+    try:
+        client = translate.TranslationServiceClient()
+        name = client.glossary_path(
+            project_id,
+            location,
+            glossary_id)
 
-            language_codes_set = translate.types.Glossary.LanguageCodesSet(
-                language_codes=[glossary.source_lang, glossary.target_lang])
+        language_codes_set = translate.types.Glossary.LanguageCodesSet(
+            language_codes=[glossary.source_lang, glossary.target_lang])
 
-            gcs_source = translate.types.GcsSource(
-                input_uri='gs://{0}/{1}'.format(bucket_name, csv_basename))
+        gcs_source = translate.types.GcsSource(
+            input_uri='gs://{0}/{1}'.format(bucket_name, csv_basename))
 
-            input_config = translate.types.GlossaryInputConfig(
-                gcs_source=gcs_source)
+        input_config = translate.types.GlossaryInputConfig(
+            gcs_source=gcs_source)
 
-            gcp_glossary = translate.types.Glossary(
-                name=name,
-                language_codes_set=language_codes_set,
-                input_config=input_config)
+        gcp_glossary = translate.types.Glossary(
+            name=name,
+            language_codes_set=language_codes_set,
+            input_config=input_config)
 
-            parent = client.location_path(project_id, location)
+        parent = client.location_path(project_id, location)
 
-            operation = client.create_glossary(parent=parent, glossary=gcp_glossary)
+        operation = client.create_glossary(parent=parent, glossary=gcp_glossary)
 
-            result = operation.result(timeout=90)
-            print('Created: {}'.format(result.name))
-            print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
-            glossary.terms = result.entry_count
-            glossary.status = 302
-        except AlreadyExists:
-            glossary.status = 302
-        except Exception as e:
-            glossary.status = 304
-        glossary.save()
+        result = operation.result(timeout=90)
+        print('Created: {}'.format(result.name))
+        print('Input Uri: {}'.format(result.input_config.gcs_source.input_uri))
+        glossary.terms = result.entry_count
+        glossary.status = 302
+    except AlreadyExists:
+        glossary.status = 302
+    except Exception as e:
+        glossary.status = 304
+    glossary.save()
 
 def create_glossary_for_trans_view_tbody_html(request, source_lang="en", target_lang="ja"):
     glossaries = Glossary.objects.filter(
@@ -178,6 +181,17 @@ def create_glossary_for_glossary_view_tbody_html(request, status_cons):
         created_date = glossary.created_date.astimezone(jst)
         created_date_str = created_date.strftime('%Y-%m-%d %H:%M')
 
+        if glossary.status == 300:
+            generate_glossary_button_html = (
+                '<a href="gen/' + str(glossary.id) + '" class="gen btn btn-primary btn-mergen-sm"'
+                ' data-toggle="tooltip" data-placement="top" title="Generate glosssary"><i class="fas fa-language"></i></a>\n'
+            )
+        else:
+            generate_glossary_button_html = (
+                '<a href="gen/' + str(glossary.id) + '" class="gen btn btn-primary btn-mergen-sm disabled">'
+                '<i class="fas fa-language"></i></a>\n'
+            )
+
         delete_button_html = (
             '<span data-toggle="tooltip" data-placement="top" title="Delete">'
             '<a href="" class="btn btn-danger btn-mergen-sm del_confirm" data-toggle="modal"'
@@ -195,7 +209,7 @@ def create_glossary_for_glossary_view_tbody_html(request, status_cons):
             '          <td>' + status_cons[glossary.status] + '</td>\n'\
             '          <td>' + str(glossary.terms) + '</td>\n'\
             '          <td>' + created_date_str + '</td>\n'\
-            '          <td class="text-center">' + delete_button_html + '</td>\n'\
+            '          <td class="text-center">' + generate_glossary_button_html + delete_button_html + '</td>\n'\
             '        </tr>\n'
     return_json = {"html": html_string}
     return return_json

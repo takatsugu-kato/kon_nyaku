@@ -291,6 +291,28 @@ $(function() {
             });
         });
 
+        //generate
+        $('table').on('click', '.gen', function(){
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $.ajax({
+                url:href,
+            }).done(function(){
+                $.notify({
+                    message: "The glossary creation has been queued. Please refresh the screen after a while.",
+                },{
+                    type: "primary",
+                    timer: 1000,
+                    delay: 3000,
+                    placement: {
+                        from: 'top',
+                        align: 'center'
+                    }
+                });
+                refreshGlossaryListForGlossaryView()
+            });
+        });
+
         //show delete modal window
         $('table').on('click', '.del_confirm', function(){
             $("#del_pk").text($(this).data("pk"));
@@ -300,11 +322,32 @@ $(function() {
         //delete glossary
         $('#deleteModal').on('click', '#del_url', function(){
             event.preventDefault();
+            $.notify({
+                message: "Deleting glossary...",
+            },{
+                type: "primary",
+                delay: 3000,
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                }
+            });
             $('#deleteModal').modal('hide');
             var href = $(this).attr('href');
             $.ajax({
                 url:href,
             }).done(function(){
+                $.notify({
+                    message: "The Glossary has been deleted.",
+                },{
+                    type: "success",
+                    timer: 1000,
+                    delay: 3000,
+                    placement: {
+                        from: 'top',
+                        align: 'center'
+                    }
+                });
                 refreshGlossaryListForGlossaryView()
             });
         });

@@ -182,6 +182,14 @@ def file_tra(request, file_id):
     lib.translator.translate_file(file_id)
     return HttpResponse()
 
+def glossary_gen(request, glossary_id):
+    """generate glossary"""
+    glossary_obj = Glossary.objects.get(pk=glossary_id)
+    glossary_obj.status = 306
+    glossary_obj.save()
+    lib.glossary.generate_glossary(glossary_id)
+    return HttpResponse()
+
 def glossary_del(request, glossary_id):
     """delete glossary"""
     glossary_obj = Glossary.objects.get(pk=glossary_id)
