@@ -184,12 +184,12 @@ def create_glossary_for_glossary_view_tbody_html(request, status_cons):
         if glossary.status == 300:
             generate_glossary_button_html = (
                 '<a href="gen/' + str(glossary.id) + '" class="gen btn btn-primary btn-mergen-sm"'
-                ' data-toggle="tooltip" data-placement="top" title="Generate glosssary"><i class="fas fa-language"></i></a>\n'
+                ' data-toggle="tooltip" data-placement="top" title="Generate glosssary"><i class="fas fa-book-open"></i></a>\n'
             )
         else:
             generate_glossary_button_html = (
                 '<a href="gen/' + str(glossary.id) + '" class="gen btn btn-primary btn-mergen-sm disabled">'
-                '<i class="fas fa-language"></i></a>\n'
+                '<i class="fas fa-book-open"></i></a>\n'
             )
 
         delete_button_html = (
