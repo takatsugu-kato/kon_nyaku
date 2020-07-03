@@ -184,5 +184,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'lib': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
