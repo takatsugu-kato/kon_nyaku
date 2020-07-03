@@ -4,7 +4,7 @@
 {% block title %}Kon-nyaku{% endblock title %}
 
 {% block content %}
-  <h2 class="border-bottom mt-2">Select Language</h2>
+  <h2 class="border-bottom mt-2">Language</h2>
   <div class="row">
     <div class="col-5">Source Language</div>
     <div class="col-5 offset-md-2">Target Language</div>
@@ -16,12 +16,30 @@
     <input type="checkbox" class="form-check-input" id="jotai">
     <label class="form-check-label" for="jotai">である調</label>
   </div>
+
+  <h2 class="border-bottom mt-2">Glossary</h2>
+  <table class="col-12 table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th scope="col" style="width:5%"></th>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">sl</th>
+        <th scope="col">tl</th>
+        <th scope="col">Terms</th>
+      </tr>
+    </thead>
+    <tbody id="glossary_table">
+      {{ glossary_list_data.html|safe }}
+    </tbody>
+  </table>
   <h2 class="border-bottom mt-2">Text Translator</h2>
   <form method="post" enctype="multipart/form-data" id="translate_text">
     {% csrf_token %}
     <input type="hidden" name="source_lang" id="text_translator_source_lang">
     <input type="hidden" name="target_lang" id="text_translator_target_lang">
     <input type="hidden" name="jotai" id="text_translator_jotai">
+    <input type="hidden" name="glossary" id="text_glossary">
     <div class="form-row">
       <div class="col-5">
         <i class="fas fa-times" id="text_clear" data-toggle="tooltip" data-placement="top" title="Clear text"></i>
@@ -46,6 +64,7 @@
         <input type="hidden" name="source_lang" id="file_translator_source_lang">
         <input type="hidden" name="target_lang" id="file_translator_target_lang">
         <input type="hidden" name="jotai" id="file_translator_jotai">
+        <input type="hidden" name="glossary" id="file_glossary">
       </div>
       {% bootstrap_field form.delete_format_tag %}
       <div class="form-row">
@@ -68,6 +87,7 @@
         <th scope="col">Name</th>
         <th scope="col">sl</th>
         <th scope="col">tl</th>
+        <th scope="col">Glossary</th>
         <th scope="col">Tags</th>
         <th scope="col">Style</th>
         <th scope="col">Progress</th>
@@ -75,7 +95,7 @@
         <th scope="col">Action</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="file_table">
       {{ file_list_data.html|safe }}
     </tbody>
   </table>
