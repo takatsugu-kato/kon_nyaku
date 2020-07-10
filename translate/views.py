@@ -99,7 +99,7 @@ def translate_text(request):
 
     google_glossary_id = None
     if copied_post_data.get('glossary'):
-        google_glossary_id = "kon-nyaku_{}".format(copied_post_data.get('glossary'))
+        google_glossary_id = os.getenv('GLOSSARY_ID_PREFIX') + copied_post_data.get('glossary')
 
     if form.is_valid():
         form.save()

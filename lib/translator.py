@@ -117,7 +117,7 @@ def translate_file(file_id):
         return
     google_glossary_id = None
     if file.glossary_to_use:
-        google_glossary_id = "kon-nyaku_{}".format(str(file.glossary_to_use.id))
+        google_glossary_id = os.getenv('GLOSSARY_ID_PREFIX') + str(file.glossary_to_use.id)
     xlf_obj = Xlf(to_trans_file + ".xlf")
     xlf_obj.translate(
         delete_format_tag=file.delete_format_tag,

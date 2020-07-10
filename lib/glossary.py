@@ -50,7 +50,7 @@ def delete_glossary_fron_google(glossary_id):
 
     client = translate.TranslationServiceClient()
 
-    glossary_id = 'kon-nyaku_' + str(glossary_id)
+    glossary_id = os.getenv('GLOSSARY_ID_PREFIX') + str(glossary_id)
 
     parent = client.glossary_path(
         project_id,
@@ -104,7 +104,7 @@ def create_glossary_on_google(glossary_id):
 
     glossary = Glossary.objects.get(pk=glossary_id)
     csv_basename = os.path.basename(str(glossary.document))
-    glossary_id = "kon-nyaku_" + str(glossary.id)
+    glossary_id = os.getenv('GLOSSARY_ID_PREFIX') + str(glossary.id)
     print("Creating {0}".format(csv_basename))
 
     try:
