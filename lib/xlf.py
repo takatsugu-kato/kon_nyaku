@@ -312,6 +312,7 @@ class PseudoClient():
 class PseudoTranslateTextResponse():
     def __init__(self):
         self.translations = list()
+        self.glossary_translations = list()
 
 class PseudoResponsedCompositeContainer():
     def __init__(self, text):

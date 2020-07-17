@@ -3,16 +3,17 @@ File translator used Google Translator API
 
 ## Requiments
 - Python 3.x
-    - `pip install Django`
-    - `pip install bootstrap4`
-    - `pip install django-background-tasks`
-    - `pip install google-cloud-translate`
-    - `pip install django-bootstrap4`
-    - `pip install lxml`
-    - `pip install environ`
-    - `pip install django-crontab`
-    - `pip install python-dateutil`
-    - `pip install 'git+https://github.com/takatsugu-kato/MasuDa.git'`
+    - `pip3 install Django`
+    - `pip3 install bootstrap4`
+    - `pip3 install django-background-tasks`
+    - `pip3 install google-cloud-translate`
+    - `pip3 install google-cloud-storage`
+    - `pip3 install django-bootstrap4`
+    - `pip3 install lxml`
+    - `pip3 install django-environ`
+    - `pip3 install django-crontab`
+    - `pip3 install python-dateutil`
+    - `pip3 install 'git+https://github.com/takatsugu-kato/MasuDa.git'`
 - Okapi
   - Java 1.8
 - supervisor
