@@ -1,0 +1,141 @@
+{% extends "mt/base.html" %}
+{% load i18n static %}
+
+{% block title %}Kon-nyaku{% endblock title %}
+
+{% block content %}
+  <h2 class="border-bottom mt-2">Language</h2>
+  <div class="row">
+    <div class="col-5">Source Language</div>
+    <div class="col-5 offset-md-2">Target Language</div>
+    {% bootstrap_field form.source_lang show_label=False form_group_class="col-5" %}
+    <a class="btn btn-warning btn-xs mb-2 col-2" id="swap_language" data-toggle="tooltip" data-placement="top" title="Swap languages"><i class='fas fa-exchange-alt'></i></a>
+    {% bootstrap_field form.target_lang show_label=False form_group_class="col-5" %}
+  </div>
+  <div class="form-check form-group float-right">
+    <input type="checkbox" class="form-check-input" id="jotai">
+    <label class="form-check-label" for="jotai">である調</label>
+  </div>
+
+  <h2 class="border-bottom mt-2">Glossary</h2>
+  <table class="col-12 table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th scope="col" style="width:5%"></th>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">sl</th>
+        <th scope="col">tl</th>
+        <th scope="col">Terms</th>
+      </tr>
+    </thead>
+    <tbody id="glossary_table">
+      {{ glossary_list_data.html|safe }}
+    </tbody>
+  </table>
+  <h2 class="border-bottom mt-2">Text Translator</h2>
+  <form method="post" enctype="multipart/form-data" id="translate_text">
+    {% csrf_token %}
+    <input type="hidden" name="source_lang" id="text_translator_source_lang">
+    <input type="hidden" name="target_lang" id="text_translator_target_lang">
+    <input type="hidden" name="jotai" id="text_translator_jotai">
+    <input type="hidden" name="glossary" id="text_glossary">
+    <div class="form-row">
+      <div class="col-5">
+        <i class="fas fa-times" id="text_clear" data-toggle="tooltip" data-placement="top" title="Clear text"></i>
+        <textarea class="form-control" rows="10" id="source_text" name="source_text"></textarea>
+      </div>
+      <div class="col-2">
+        {% bootstrap_button "<i class='fas fa-language'></i> Translate with Google" id="translate_text_btn" button_type="submit" button_class="w-100 btn-primary" %}
+      </div>
+      <div class="col-5">
+        <textarea class="form-control" rows="10" id="target_text" readonly></textarea>
+      </div>
+      <div class="col-5 offset-md-7">
+        <img src="{% static 'images/color-regular.png' %}">
+      </div>
+    </div>
+  </form>
+
+  <h2 class="border-bottom mt-2">File Translator</h2>
+  <form method="post" enctype="multipart/form-data" id="file_upload">
+    <div class="form-row">
+        {% csrf_token %}
+        <input type="hidden" name="source_lang" id="file_translator_source_lang">
+        <input type="hidden" name="target_lang" id="file_translator_target_lang">
+        <input type="hidden" name="jotai" id="file_translator_jotai">
+        <input type="hidden" name="glossary" id="file_glossary">
+      </div>
+      {% bootstrap_field form.delete_format_tag %}
+      <div class="form-row">
+        <div class="input-group col-10">
+          <label id="choose_file">
+            <span class="btn btn-primary"><i class="fas fa-file"></i> Choose File
+              {{ form.document }}
+            </span>
+          </label>
+          <input id="display_file_name" type="text" class="form-control" readonly="">
+        </div>
+        {{ form.name }}
+        {% bootstrap_button "<i class='fas fa-upload'></i> Upload" id="upload" button_type="submit" button_class="btn-info mb-2 col-2" %}
+    </div>
+  </form>
+  <table class="col-12 table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">sl</th>
+        <th scope="col">tl</th>
+        <th scope="col">Glossary</th>
+        <th scope="col">Tags</th>
+        <th scope="col">Style</th>
+        <th scope="col">Progress</th>
+        <th scope="col">Created</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody id="file_table">
+      {{ file_list_data.html|safe }}
+    </tbody>
+  </table>
+  {# Modal dialog to confirm deletion #}
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete ID: <span id="del_pk"></span>?</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-primary" id="del_url">OK</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# Modal dialog to warning download #}
+  <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="downloadModalLabel">Warning</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p>ダウンロードしたファイルは、個人または翻訳者の参照用のみに使用すること。</p>
+          <p><span class="text-danger">クライアントへの納品物として使用する場合は、必ず編集部を介すこと。</span></p>
+        </div>
+        <div class="modal-footer">
+          <!-- <a href="#" class="btn btn-primary" id="download_url" download>OK</a> -->
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="download_OK">Agree</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Disagree</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock content %}
+</div>

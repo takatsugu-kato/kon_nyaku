@@ -10,7 +10,7 @@ $(function() {
 
 
     var path = location.pathname
-    if (path == "/translate/translator/"){
+    if (path == "/mt/translator/"){
         refreshFileList()
         // auto size the textarea
         // reference: https://www.webantena.net/javascriptjquery/plugin-jquery-autosize/
@@ -70,7 +70,7 @@ $(function() {
             $('#file_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
-                url:"/translate/upload_file/",
+                url:"/mt/upload_file/",
                 data: new FormData($("#file_upload").get(0)),
                 processData: false,
                 contentType: false,
@@ -202,7 +202,7 @@ $(function() {
             $('#text_translator_jotai').val($('#jotai').prop('checked'));
             $.ajax({
                 type:'POST',
-                url:"/translate/translate_text/",
+                url:"/mt/translate_text/",
                 data: new FormData($("#translate_text").get(0)),
                 processData: false,
                 contentType: false,
@@ -237,7 +237,7 @@ $(function() {
             var csrf_token = getCookie("csrftoken");
             $.ajax({
                 type:'POST',
-                url:'/translate/get_glossary_list_data_for_translator_view/',
+                url:'/mt/get_glossary_list_data_for_translator_view/',
                 data: {
                     sl: $('#id_source_lang').val(),
                     tl: $('#id_target_lang').val()
@@ -267,7 +267,7 @@ $(function() {
         });
     }
 
-    if (path == "/translate/glossary/"){
+    if (path == "/mt/glossary/"){
         refreshGlossaryListForGlossaryView()
         //upload glossary
         $('#upload_glossary').on('click', function() {
@@ -275,7 +275,7 @@ $(function() {
             var csrf_token = getCookie("csrftoken");
             $.ajax({
                 type:'POST',
-                url:"/translate/upload_glossary/",
+                url:"/mt/upload_glossary/",
                 data: new FormData($("#glossary_upload").get(0)),
                 processData: false,
                 contentType: false,
@@ -383,7 +383,7 @@ $(function() {
     function refreshFileList(){
         var html;
         $.ajax({
-            url:'/translate/get_file_list_data/',
+            url:'/mt/get_file_list_data/',
             dataType:'json',
         }).done(function(data){
             $(document.querySelector('#file_table')).html(data.html);
@@ -399,7 +399,7 @@ $(function() {
     function refreshGlossaryListForGlossaryView(){
         var html;
         $.ajax({
-            url:'/translate/get_glossary_list_data_for_glossary_view/',
+            url:'/mt/get_glossary_list_data_for_glossary_view/',
             dataType:'json',
         }).done(function(data){
             $(document.querySelector('#glossary_table')).html(data.html);

@@ -1,0 +1,71 @@
+{% extends "mt/base.html" %}
+
+{% block title %}Kon-nyaku{% endblock title %}
+
+{% block content %}
+  <h1 class="border-bottom mt-2">翻訳</h1>
+  <h2 class="mt-2">テキスト翻訳</h2>
+  <ol>
+    <li><var>Language</var>で翻訳方向を指定</li>
+    <ul><li>Target Languageが日本語の場合、<var>「である調」</var>を選択すると、ですます調がである調に変換される</li></ul>
+    <li><var>Glossary</var>で用語集を指定</li>
+    <li><var>Text Translator</var>の左側のテキストエリアに翻訳したい文章を入力</li>
+    <li><span class="btn btn-primary btn-sm"><i class="fas fa-language"></i> Translate with Google</span> ボタンをクリックまたはCtrl + Enterキーを押下</li>
+    <li><var>Text Translator</var>の右側のテキストエリアに翻訳された結果が表示される</li>
+  </ol>
+
+  <h2 class="mt-2">ファイル翻訳</h2>
+  <ol>
+    <li><var>Language</var>で翻訳方向を指定</li>
+      <ul><li>Target Languageが日本語の場合、<var>「である調」</var>を選択すると、ですます調がである調に変換される</li></ul>
+    <li><var>Glossary</var>で用語集を指定</li>
+    <li><span class="btn btn-primary btn-sm"><i class="fas fa-file"></i> Choose File</span> ボタンをクリック</li>
+    <li>翻訳したいファイルを選択</li>
+    <li>インライン書式を維持したい場合は<var>Delete Format Tags</var>のチェックをはずす</li>
+    <li><span class="btn btn-info btn-sm"><i class="fas fa-upload"></i> Upload</span> ボタンをクリック</li>
+    <li>アップロードされたファイルの <span class="btn btn-primary btn-sm"><i class="fas fa-language"></i></span> ボタンをクリック</li>
+    <li>翻訳がおわると<var>Progress</var>が <i class="fas fa-download"></i> Download</a> に変わるのでクリックしてダウンロードする</li>
+  </ol>
+
+  <h2 class="mt-2">仕様</h2>
+  <ul>
+    <li>英語⇔他言語のみNMTに対応</li>
+    <li>その他の組み合わせはSMT</li>
+    <li>ファイル翻訳は*.pptx、*.docx、*.xlsxのみサポート</li>
+    <li>ユーザの判別はセッションを使用
+      <ul>
+        <li>同じPCでもブラウザを変えると別ユーザ扱い</li>
+        <li>有効期限は2週間で、なにか操作があるたびに延長</li>
+      </ul>
+    </li>
+    <li>用語集は全ユーザーで共有</li>
+    <li>ファイルは30日で自動削除</li>
+    <li>管理者画面でIPアドレス、翻訳文字数を保持</li>
+  </ul>
+
+  <h1 class="border-bottom mt-2">用語集</h1>
+  <h2>対応ファイルフォーマット</h2>
+  <ul>
+    <li>カンマ区切り</li>
+    <li>UTF-8</li>
+    <li>拡張子csv</li>
+    <li>ヘッダー行なし</li>
+  </ul>
+  <h2>作成方法</h2>
+  <ul>
+    <li><var>Glossary</var>ページを開く</li>
+    <li><var>Source Language</var>と<var>Target Language</var>を選択</li>
+    <li><span class="btn btn-primary btn-sm"><i class="fas fa-file"></i> Choose File</span> ボタンをクリック</li>
+    <li>CSVファイルを選択</li>
+    <li><span class="btn btn-info btn-sm"><i class="fas fa-upload"></i> Upload</span> ボタンをクリック</li>
+    <li>アップロードされたファイルの <span class="btn btn-primary btn-sm"><i class="fas fa-book-open"></i></span> ボタンをクリック</li>
+    <li>アラートが表示され、<var>Status</var>が<var>Created</var>に変わったら作成完了</li>
+  </ul>
+
+  <h1 class="border-bottom mt-2">アップデート予定</h1>
+  <ul>
+    <li>PDF対応</li>
+  </ul>
+
+{% endblock content %}
+</div>

@@ -50,14 +50,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'translate',
+    'mt',
     'bootstrap4',
     'background_task',
     'django_crontab'
 ]
 
 CRONJOBS = [
-    ('0 4 * * *', 'translate.cron.set_delete_flag', '>> ' + os.path.join(BASE_DIR, 'log/django-cron.log'))
+    ('0 4 * * *', 'mt.cron.set_delete_flag', '>> ' + os.path.join(BASE_DIR, 'log/django-cron.log'))
 ]
 
 MIDDLEWARE = [
@@ -180,7 +180,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'translate': {
+        'mt': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,

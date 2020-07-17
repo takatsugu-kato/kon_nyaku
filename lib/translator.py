@@ -10,7 +10,7 @@ from django.conf import settings
 
 from background_task import background
 from google.cloud import translate
-from translate.models import File
+from mt.models import File
 from lib.okapi import Okapi
 from lib.xlf import Xlf
 from .xlf import PseudoClient

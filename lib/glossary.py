@@ -7,7 +7,7 @@ import pytz
 from django.conf import settings
 
 from background_task import background
-from translate.models import Glossary
+from mt.models import Glossary
 from google.cloud import storage
 from google.cloud import translate
 from google.api_core.exceptions import AlreadyExists
