@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'mt',
     'bootstrap4',
     'background_task',
-    'django_crontab'
+    'django_crontab',
+    'debug_toolbar'
 ]
 
 CRONJOBS = [
@@ -68,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'kon_nyaku.urls'
@@ -192,3 +194,5 @@ LOGGING = {
         },
     },
 }
+
+INTERNAL_IPS = ['127.0.0.1']
