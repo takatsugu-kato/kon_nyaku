@@ -216,9 +216,9 @@ def set_delete_flag(file_id):
     file = get_object_or_404(File, pk=file_id)
 
     root, ext = os.path.splitext(str(file.document))
-    org_file_path = "/home/tkato/kon_nyaku/media/" + str(file.document)
-    translated_file_path = "/home/tkato/kon_nyaku/media/" + root + ".out" + ext
-    xlf_file_path = "/home/tkato/kon_nyaku/media/" + str(file.document) + ".xlf"
+    org_file_path = "/home/tkato/kon_nyaku/" + str(file.document)
+    translated_file_path = "/home/tkato/kon_nyaku/" + root + ".out" + ext
+    xlf_file_path = "/home/tkato/kon_nyaku/" + str(file.document) + ".xlf"
 
     if os.path.exists(translated_file_path):
         os.remove(translated_file_path)
